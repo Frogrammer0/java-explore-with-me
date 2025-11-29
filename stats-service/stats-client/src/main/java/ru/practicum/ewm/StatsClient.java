@@ -19,7 +19,7 @@ public class StatsClient {
     private final String statsUrl;
 
     public StatsClient(RestTemplate restTemplate,
-                       @Value("http://stats-server:9090") String statsUrl) {
+                       @Value("${stats-server.url}") String statsUrl) {
         this.restTemplate = restTemplate;
         this.statsUrl = statsUrl;
     }
