@@ -1,7 +1,6 @@
 services:
   stats-db:
     image: postgres:16.1
-    container_name: stats-db
     ports:
       - "6541:5432"
     environment:
@@ -9,14 +8,13 @@ services:
       POSTGRES_PASSWORD: stats
       POSTGRES_DB: stats
     healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -q -d $POSTGRES_DB -U $POSTGRES_USER"]
       interval: 5s
+      timeout: 5s
       retries: 10
 
   stats-server:
     build: ./stats-service/stats-server
-    container_name: stats-service
     ports:
       - "9090:9090"
     depends_on:
@@ -27,16 +25,14 @@ services:
       SPRING_DATASOURCE_USERNAME: stats
       SPRING_DATASOURCE_PASSWORD: stats
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9090/actuator/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
       interval: 10s
-      timeout: 10s
-      retries: 15
-      start_period: 90s
-
+      timeout: 5s
+      retries: 10
+      start_period: 40s
 
   ewm-db:
     image: postgres:16.1
-    container_name: ewm-db
     ports:
       - "6542:5432"
     environment:
@@ -44,14 +40,13 @@ services:
       POSTGRES_PASSWORD: ewm
       POSTGRES_DB: ewm
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ewm -d ewm" ]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -q -d $POSTGRES_DB -U $POSTGRES_USER"]
+      interval: 5s
       timeout: 5s
       retries: 10
 
   ewm-service:
     build: ./main-service
-    container_name: ewm-service
     ports:
       - "8080:8080"
     depends_on:
