@@ -25,7 +25,7 @@ public class Request {
     Event event;
 
     @Column
-    ParticipationState status;
+    EventStatus status;
 
     @Column
     LocalDateTime created;
