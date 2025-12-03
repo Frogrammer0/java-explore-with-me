@@ -1,64 +1,68 @@
 package ru.practicum.ewm.event;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import ru.practicum.ewm.category.Category;
-import ru.practicum.ewm.location.Location;
 import ru.practicum.ewm.user.User;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column
-    String annotation;
+    private String annotation;
 
     @Column
-    String description;
+    private String description;
 
     @Column
-    String title;
+    private String title;
 
     @Column
-    LocalDateTime eventDate;
+    private LocalDateTime eventDate;
 
     @Column
-    LocalDateTime publishedOn;
+    private LocalDateTime publishedOn;
 
     @Column
-    boolean paid;
+    private LocalDateTime createdOn;
 
     @Column
-    int participantLimit;
+    private Boolean paid;
 
     @Column
-    boolean requestModeration;
+    private int participantLimit;
 
     @Column
-    EventState state;
+    private Boolean requestModeration;
 
     @Column
-    int confirmedRequests;
+    private EventState state;
 
     @Column
-    int views;
+    private int confirmedRequests;
+
+    @Column
+    private int views;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    User initiator;
+    @JoinColumn(name = "user_id")
+    private User initiator;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Category category;
+    private Category category;
 
     @Embedded
-    Location location;
+    private Location location;
 
 }

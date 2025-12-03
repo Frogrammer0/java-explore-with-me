@@ -11,15 +11,15 @@ public class Compilation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column
-    String title;
+    private String title;
 
     @Column
-    boolean pinned;
+    private boolean pinned;
 
     @ManyToMany
     @JoinTable(name = "events")
-    List<Event> events;
+    private List<Event> events;
 }

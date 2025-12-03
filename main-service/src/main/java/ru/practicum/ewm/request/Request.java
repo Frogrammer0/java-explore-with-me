@@ -16,17 +16,17 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    User requester;
+    private User requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Event event;
+    private Event event;
 
     @Column
-    EventStatus status;
+    private EventStatus status;
 
     @Column
-    LocalDateTime created;
+    private LocalDateTime created;
 }

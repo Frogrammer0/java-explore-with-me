@@ -6,14 +6,15 @@ services:
     ports:
       - "6541:5432"
     environment:
-      POSTGRES_USER: stats
-      POSTGRES_PASSWORD: stats
-      POSTGRES_DB: stats
+      - POSTGRES_USER=stats
+      - POSTGRES_PASSWORD=stats
+      - POSTGRES_DB=stats
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U stats -d stats"]
       interval: 5s
       timeout: 5s
       retries: 10
+
 
   stats-server:
     build: ./stats-service/stats-server

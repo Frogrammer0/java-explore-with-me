@@ -1,15 +1,22 @@
 package ru.practicum.ewm.category;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "categories")
+@Builder
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(unique = true)
-    String name;
+    private String name;
 }
