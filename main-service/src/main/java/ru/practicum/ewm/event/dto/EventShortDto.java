@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class EventShortDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

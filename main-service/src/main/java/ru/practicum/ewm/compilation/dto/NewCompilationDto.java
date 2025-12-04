@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class NewCompilationDto {
 
     List<Long> events;

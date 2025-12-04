@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 @Builder
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class NewUserRequest {
 
     @Email(message = "Некорректный email")

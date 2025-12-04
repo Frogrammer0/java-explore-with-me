@@ -1,8 +1,7 @@
 package ru.practicum.ewm.request;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import ru.practicum.ewm.event.Event;
 import ru.practicum.ewm.user.User;
 
@@ -10,7 +9,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 public class Request {
 
@@ -25,7 +26,7 @@ public class Request {
     private Event event;
 
     @Column
-    private EventStatus status;
+    private RequestStatus status;
 
     @Column
     private LocalDateTime created;

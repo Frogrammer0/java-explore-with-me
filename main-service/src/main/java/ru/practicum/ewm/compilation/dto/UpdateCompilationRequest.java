@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class UpdateCompilationRequest {
 
     List<Long> events;

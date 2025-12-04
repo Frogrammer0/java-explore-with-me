@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class UpdateEventUserRequest {
 
     @Size(min = 20, max = 2000, message = "неверная длина аннотации")

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @Component
 @AllArgsConstructor
+@NoArgsConstructor
 public class NewEventDto {
 
     @NotBlank

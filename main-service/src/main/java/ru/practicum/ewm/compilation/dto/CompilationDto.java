@@ -12,6 +12,7 @@ import java.util.List;
 @ToString
 @Builder
 @Component
+@NoArgsConstructor
 @AllArgsConstructor
 public class CompilationDto {
 
