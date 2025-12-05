@@ -23,7 +23,7 @@ public class NewEventDto {
     String annotation;
 
     @NotBlank
-    Integer category;
+    Long category;
 
     @NotBlank
     @Size(min = 20, max = 7000, message = "неверная длина описания")
