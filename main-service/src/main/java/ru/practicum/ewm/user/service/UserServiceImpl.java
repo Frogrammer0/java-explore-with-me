@@ -2,6 +2,8 @@ package ru.practicum.ewm.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.common.exception.ConflictException;
 import ru.practicum.ewm.common.exception.NotFoundException;
@@ -36,7 +38,8 @@ public class UserServiceImpl implements UserService{
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         if (ids == null || ids.isEmpty()) {
             log.info("получение всех пользователей в UserService");
-            return userRepository.findAllWithOffset(from, size).stream()
+            Pageable page = PageRequest.of(from/size, size);
+            return userRepository.findAll(page).stream()
                     .map(userMapper::toUserDto)
                     .collect(Collectors.toList());
         }

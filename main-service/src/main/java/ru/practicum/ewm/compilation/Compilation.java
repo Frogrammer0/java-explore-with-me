@@ -1,12 +1,20 @@
 package ru.practicum.ewm.compilation;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.ewm.event.Event;
 
 import java.util.List;
 
 @Entity
 @Table(name = "compilations")
+@Builder
+@Getter
+@Setter
+@ToString
 public class Compilation {
 
     @Id
@@ -17,7 +25,7 @@ public class Compilation {
     private String title;
 
     @Column
-    private boolean pinned;
+    private Boolean pinned;
 
     @ManyToMany
     @JoinTable(name = "events")
