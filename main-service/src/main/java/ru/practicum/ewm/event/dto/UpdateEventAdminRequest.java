@@ -20,7 +20,7 @@ public class UpdateEventAdminRequest {
     @Size(min = 20, max = 2000, message = "неверная длина аннотации")
     String annotation;
 
-    Integer category;
+    Long category;
 
     @Size(min = 20, max = 7000, message = "неверная длина описания")
     String description;
