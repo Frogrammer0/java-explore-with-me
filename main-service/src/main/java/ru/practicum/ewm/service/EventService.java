@@ -5,7 +5,6 @@ import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
-import ru.practicum.ewm.dto.request.ParticipationRequestDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
