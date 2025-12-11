@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.dto.event.*;
+import ru.practicum.ewm.exception.*;
 import ru.practicum.ewm.mapper.EventMapper;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.model.*;
@@ -16,11 +17,7 @@ import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.RequestsRepository;
 import ru.practicum.ewm.mapper.RequestMapper;
 import ru.practicum.ewm.service.EventService;
-import ru.practicum.ewm.exception.ConflictException;
-import ru.practicum.ewm.exception.ForbiddenException;
-import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.dto.ViewStatsDto;
-import ru.practicum.ewm.exception.IllegalArgumentException;
 import ru.practicum.ewm.dto.request.EventConfirmedDto;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
@@ -180,7 +177,7 @@ public class EventServiceImpl implements EventService {
         List<Request> requests = requestsRepository.findAllByIdIn(updateRequest.getRequestsId());
         requests.forEach(r -> {
             if (r.getStatus() == RequestStatus.CONFIRMED || r.getStatus() == RequestStatus.REJECTED) {
-                throw new IllegalArgumentException("в списке имеются уже обработанные заявки");
+                throw new ConflictException("в списке имеются уже обработанные заявки");
             }
         });
 
@@ -215,16 +212,18 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getEventsForAdmin(List<Long> users,
                                                 List<EventState> states,
                                                 List<Long> categories,
-                                                LocalDateTime startRange,
-                                                LocalDateTime endRange,
+                                                LocalDateTime rangeStart,
+                                                LocalDateTime rangeEnd,
                                                 int from, int size) {
-        log.info("получение админом событий пользователя ids = {} в EventServiceImpl", users);
+        log.info("получение админом событий пользователей ids = {} в EventServiceImpl", users);
         Pageable page = PageRequest.of(from / size, size);
-        if (users != null && users.isEmpty()) users = null;
+        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
+        if ((users != null && users.isEmpty()) || (users.size() == 1 && users.getFirst() == 0)) users = null;
         if (states != null && states.isEmpty()) states = null;
-        if (categories != null && categories.isEmpty()) categories = null;
+        if ((categories != null && categories.isEmpty()) ||
+                (categories.size() == 1 && categories.getFirst() == 0)) categories = null;
 
-        return eventRepository.findAdminEvents(users, states, categories, startRange, endRange, page).stream()
+        return eventRepository.findAdminEvents(users, states, categories, start, rangeEnd, page).stream()
                 .map(eventMapper::toEventFullDto)
                 .collect(Collectors.toList());
 
@@ -286,7 +285,7 @@ public class EventServiceImpl implements EventService {
                                                Boolean onlyAvailable, String sort, int from, int size) {
         log.info("получение событий getPublicEvents в EventServiceImpl");
         if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-            throw new IllegalArgumentException("время начала позже времени конца");
+            throw new BadRequestException("время начала позже времени конца");
         }
         Pageable page = PageRequest.of(from / size, size);
 

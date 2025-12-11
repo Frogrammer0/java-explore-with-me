@@ -3,12 +3,12 @@ package ru.practicum.ewm.controller.admin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
+import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.service.EventService;
 
 import java.time.LocalDateTime;
@@ -27,16 +27,18 @@ public class AdminEventController {
     public List<EventFullDto> getEvents(@RequestParam List<Long> users,
                                         @RequestParam List<String> states,
                                         @RequestParam List<Long> categories,
-                                        @RequestParam(required = false) String startRange,
-                                        @RequestParam(required = false) String endRange,
+                                        @RequestParam(required = false)
+                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                        LocalDateTime rangeStart,
+                                        @RequestParam(required = false)
+                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                        LocalDateTime rangeEnd,
                                         @RequestParam(defaultValue = "0") int from,
                                         @RequestParam(defaultValue = "10") int size) {
         log.info("getEvents in AdminEventController");
-        LocalDateTime start = (startRange != null) ? LocalDateTime.parse(startRange) : null;
-        LocalDateTime end = (endRange != null) ? LocalDateTime.parse(endRange) : null;
         List<EventState> stateList = states.stream().map(EventState::valueOf).toList();
 
-        return eventService.getEventsForAdmin(users, stateList, categories, start, end, from, size);
+        return eventService.getEventsForAdmin(users, stateList, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")

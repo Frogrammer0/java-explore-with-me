@@ -1,9 +1,9 @@
 package ru.practicum.ewm.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.dto.user.UserShortDto;
@@ -29,14 +29,11 @@ public class EventShortDto {
 
     Long confirmedRequests;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @NotBlank
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
-    @NotBlank
     UserShortDto initiator;
 
-    @NotBlank
     Boolean paid;
 
     @NotBlank

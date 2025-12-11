@@ -4,6 +4,7 @@ package ru.practicum.ewm.controller.priv;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
@@ -23,6 +24,7 @@ public class PrivateEventController {
     private final EventService eventService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto create(@PathVariable Long userId,
                                @RequestBody @Valid NewEventDto eventDto) {
         log.info("create in PrivateEventController");

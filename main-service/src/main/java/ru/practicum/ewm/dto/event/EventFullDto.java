@@ -1,9 +1,9 @@
 package ru.practicum.ewm.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.category.CategoryDto;
 import ru.practicum.ewm.model.EventState;
@@ -36,29 +36,24 @@ public class EventFullDto {
 
     Long confirmedRequests;
 
-    @NotBlank
     Boolean paid;
 
     Integer participantLimit;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
 
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @NotBlank
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
 
-    @NotBlank
     UserShortDto initiator;
 
-    @NotBlank
     Location location;
-
 
     @Builder.Default
     Boolean requestModeration = true;

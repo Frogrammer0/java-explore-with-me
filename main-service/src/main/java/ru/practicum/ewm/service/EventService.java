@@ -26,8 +26,8 @@ public interface EventService {
     List<EventFullDto> getEventsForAdmin(List<Long> users,
                                          List<EventState> states,
                                          List<Long> categories,
-                                         LocalDateTime startRange,
-                                         LocalDateTime endRange,
+                                         LocalDateTime rangeStart,
+                                         LocalDateTime rangeEnd,
                                          int from, int size);
 
     EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateRequest);
@@ -35,8 +35,8 @@ public interface EventService {
     List<EventShortDto> getPublicEvents(String text,
                                        List<Long> categories,
                                        Boolean paid,
-                                       LocalDateTime startRange,
-                                       LocalDateTime endRange,
+                                       LocalDateTime rangeStart,
+                                       LocalDateTime rangeEnd,
                                        Boolean onlyAvailable,
                                        String sort,
                                        int from,

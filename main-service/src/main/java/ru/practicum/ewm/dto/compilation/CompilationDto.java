@@ -16,10 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CompilationDto {
 
-    @NotBlank
     Long id;
 
-    @NotBlank
     Boolean pinned;
 
     @NotBlank

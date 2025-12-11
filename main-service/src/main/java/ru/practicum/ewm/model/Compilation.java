@@ -26,6 +26,10 @@ public class Compilation {
     private Boolean pinned;
 
     @ManyToMany
-    @JoinTable(name = "events")
+    @JoinTable(
+            name = "compilation_events",
+            joinColumns = @JoinColumn(name = "compilation_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
     private List<Event> events;
 }

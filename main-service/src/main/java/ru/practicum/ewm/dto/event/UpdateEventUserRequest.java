@@ -1,9 +1,9 @@
 package ru.practicum.ewm.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.model.StateAction;
@@ -27,7 +27,7 @@ public class UpdateEventUserRequest {
     @Size(min = 20, max = 7000, message = "неверная длина описания")
     String description;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     Location location;
@@ -35,7 +35,6 @@ public class UpdateEventUserRequest {
     Boolean paid;
 
     @Positive
-    @NonNull
     Integer participantLimit;
 
     Boolean requestModeration;

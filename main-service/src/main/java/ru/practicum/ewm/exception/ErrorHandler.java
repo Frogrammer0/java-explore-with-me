@@ -45,7 +45,7 @@ public class ErrorHandler {
     public ApiError handleBadRequest(final BadRequestException e) {
         return ApiError.builder()
                 .errors(List.of())
-                .message(e.getMessage())
+                .message(e.getMessage() + e.getLocalizedMessage())
                 .reason("Неверный запрос")
                 .status(HttpStatus.BAD_REQUEST)
                 .timestamp(LocalDateTime.now())
@@ -59,22 +59,11 @@ public class ErrorHandler {
                 .errors(List.of())
                 .message(e.getMessage())
                 .reason("Ошибка доступа")
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.FORBIDDEN)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
 
-    @ExceptionHandler(Throwable.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleBadRequest(final Throwable e) {
-        return ApiError.builder()
-                .errors(List.of())
-                .message(e.getMessage())
-                .reason("Ошибка сервера")
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
