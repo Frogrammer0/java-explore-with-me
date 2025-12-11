@@ -4,6 +4,7 @@ package ru.practicum.ewm.controller.priv;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class PrivateEventController {
     private final EventService eventService;
 
@@ -48,8 +50,12 @@ public class PrivateEventController {
     @PatchMapping("/{eventId}")
     public EventFullDto updateUserEvent(@PathVariable Long userId,
                                         @PathVariable Long eventId,
-                                        @RequestBody @Valid UpdateEventUserRequest dto) {
+                                        @RequestBody(required = false) @Valid UpdateEventUserRequest dto) {
         log.info("updateUserEvent in PrivateEventController userId = {}, eventId = {}", userId, eventId);
+        log.info("dto = {}", dto);
+        if (dto == null) {
+            return eventService.cancelEventByUser(userId, eventId);
+        }
         return eventService.updateEventByUser(dto, userId, eventId);
     }
 

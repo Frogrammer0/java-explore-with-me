@@ -1,5 +1,6 @@
 package ru.practicum.ewm.dto.event;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,7 +22,7 @@ public class UpdateEventUserRequest {
     @Size(min = 20, max = 2000, message = "неверная длина аннотации")
     String annotation;
 
-     Long category;
+    Long category;
 
     @Size(min = 20, max = 7000, message = "неверная длина описания")
     String description;
@@ -33,6 +34,8 @@ public class UpdateEventUserRequest {
 
     Boolean paid;
 
+    @Positive
+    @NonNull
     Integer participantLimit;
 
     Boolean requestModeration;

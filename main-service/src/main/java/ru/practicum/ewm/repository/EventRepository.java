@@ -27,7 +27,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Boolean existsByIdAndInitiatorId(Long eventId, Long initiatorId);
 
-    @Query(value = """
+    @Query("""
             select e
             from Event e
             where (:users is NULL or e.initiator.id in :users)
@@ -43,7 +43,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                 @Param("end") LocalDateTime endRange,
                                 Pageable page);
 
-    @Query(value = """
+    @Query("""
             select e
             from Event e
             where e.state = ru.practicum.ewm.model.EventState.PUBLISHED
@@ -51,8 +51,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             or lower(e.description) LIKE lower(concat('%', :text, '%')))
             and (:categories is NULL or e.category.id IN :categories)
             and (e.paid = :paid)
-            and (:startRange is NULL or e.eventDate >= :startRange)
-            and (:endRange is NULL or e.eventDate <= :endRange)
+            and (e.eventDate >= :startRange)
+            and (e.eventDate <= coalesce(:endRange, e.eventDate))
             order by e.eventDate asc
             """)
     List<Event> findPublicEvents(@Param("text") String text,

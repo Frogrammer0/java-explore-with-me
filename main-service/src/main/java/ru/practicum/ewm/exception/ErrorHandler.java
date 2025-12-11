@@ -1,7 +1,10 @@
 package ru.practicum.ewm.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -87,8 +90,41 @@ public class ErrorHandler {
                 .build();
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleBadRequest(HttpMessageNotReadableException e) {
+        return ApiError.builder()
+                .errors(List.of())
+                .message(e.getMessage())
+                .reason("Некорректный формат данных")
+                .status(HttpStatus.BAD_REQUEST)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleValidationExceptions(MethodArgumentNotValidException e) {
 
+        return ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .reason("Некорректный формат данных")
+                .message(e.getMessage())
+                .errors(List.of())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleConstraintViolationException(ConstraintViolationException e) {
+        return ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .reason("Некорректный формат данных")
+                .message(e.getMessage())
+                .errors(List.of())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 
 }

@@ -3,6 +3,7 @@ package ru.practicum.ewm.controller.pub;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
@@ -24,8 +25,12 @@ public class PublicEventController {
     public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
                                          @RequestParam(required = false) List<Long> categories,
                                          @RequestParam(required = false) Boolean paid,
-                                         @RequestParam(required = false) String startRange,
-                                         @RequestParam(required = false) String endRange,
+                                         @RequestParam(required = false)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         LocalDateTime rangeStart,
+                                         @RequestParam(required = false)
+                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                         LocalDateTime rangeEnd,
                                          @RequestParam(defaultValue = "false") boolean onlyAvailable,
                                          @RequestParam(defaultValue = "EVENT_DATE") String sort,
                                          @RequestParam(defaultValue = "0") int from,
@@ -35,13 +40,10 @@ public class PublicEventController {
 
         statsService.sendHit(request);
 
-        LocalDateTime start = (startRange != null) ? LocalDateTime.parse(startRange) : null;
-        LocalDateTime end = (endRange != null) ? LocalDateTime.parse(endRange) : null;
-
 
         return eventService.getPublicEvents(
                 text, categories, paid,
-                start, end,
+                rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size
         );
     }

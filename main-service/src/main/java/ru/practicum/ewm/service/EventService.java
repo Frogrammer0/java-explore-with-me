@@ -45,5 +45,7 @@ public interface EventService {
 
     EventFullDto getPublishedEventById(Long eventId);
 
+    EventFullDto cancelEventByUser(Long userId, Long eventId);
+
 
 }

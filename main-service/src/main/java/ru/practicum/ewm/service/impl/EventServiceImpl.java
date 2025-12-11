@@ -24,7 +24,6 @@ import ru.practicum.ewm.exception.IllegalArgumentException;
 import ru.practicum.ewm.dto.request.EventConfirmedDto;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
-import ru.practicum.ewm.dto.request.ParticipationRequestDto;
 import ru.practicum.ewm.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -141,6 +140,37 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
+    public EventFullDto cancelEventByUser(Long userId, Long eventId) {
+        log.info("отмена события id = {} в EventServiceImpl для userId = {}", eventId, userId);
+        Event event = getEventOrThrow(eventId);
+        checkInitiator(userId, event);
+        if (event.getState() == EventState.PUBLISHED) {
+            throw new ConflictException("нельзя изменять опубликованные события");
+        }
+
+        event.setState(EventState.PENDING);
+
+        UpdateEventAdminRequest adminRequest = UpdateEventAdminRequest.builder()
+                .annotation(event.getAnnotation())
+                .category(event.getCategory().getId())
+                .description(event.getDescription())
+                .eventDate(event.getEventDate())
+                .location(event.getLocation())
+                .paid(event.getPaid())
+                .participantLimit(event.getParticipantLimit())
+                .requestModeration(event.getRequestModeration())
+                .title(event.getTitle())
+                .stateAction(StateAction.REJECT_EVENT)
+                .build();
+
+        updateEventByAdmin(eventId, adminRequest);
+
+
+        return eventMapper.toEventFullDto(event);
+    }
+
+
+    @Override
     public EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId,
                                                               EventRequestStatusUpdateRequest updateRequest) {
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
@@ -252,15 +282,17 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
-                                               LocalDateTime startRange, LocalDateTime endRange,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, int from, int size) {
         log.info("получение событий getPublicEvents в EventServiceImpl");
-        if (startRange != null && endRange != null && startRange.isAfter(endRange)) {
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
             throw new IllegalArgumentException("время начала позже времени конца");
         }
         Pageable page = PageRequest.of(from / size, size);
 
-        List<EventFullDto> events = eventRepository.findPublicEvents(text, categories, paid, startRange, endRange, page)
+        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
+
+        List<EventFullDto> events = eventRepository.findPublicEvents(text, categories, paid, start, rangeEnd, page)
                 .stream()
                 .map(eventMapper::toEventFullDto)
                 .toList();
@@ -295,6 +327,8 @@ public class EventServiceImpl implements EventService {
 
         return eventFullDto;
     }
+
+
 
 
     private EventFullDto appendEventFullDto(EventFullDto eventDto) {

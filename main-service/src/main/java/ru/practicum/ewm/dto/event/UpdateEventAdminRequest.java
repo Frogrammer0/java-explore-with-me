@@ -1,5 +1,6 @@
 package ru.practicum.ewm.dto.event;
 
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,6 +33,7 @@ public class UpdateEventAdminRequest {
 
     Boolean paid;
 
+    @Positive
     Integer participantLimit;
 
     Boolean requestModeration;
