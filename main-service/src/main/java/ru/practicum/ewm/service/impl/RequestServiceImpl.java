@@ -73,6 +73,7 @@ public class RequestServiceImpl implements RequestService {
         } else {
             request.setStatus(RequestStatus.CONFIRMED);
         }
+
         return requestMapper.toParticipationRequestDto(requestsRepository.save(request));
     }
 

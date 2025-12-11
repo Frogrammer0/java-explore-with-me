@@ -46,25 +46,28 @@ public class StatsClient {
         if (start.isAfter(end)) {
             throw new IllegalArgumentException("Дата начала не может быть позже даты окончания");
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(statsUrl + "/stats")
-                .queryParam("start", start.format(formatter))
-                .queryParam("end", end.format(formatter))
-                .queryParam("unique", unique);
-
-        if (uris != null && !uris.isEmpty()) {
-            uris.forEach(uri -> builder.queryParam("uris", uri));
-        }
 
 
-        ResponseEntity<ViewStatsDto[]> response = restTemplate.getForEntity(
-                builder.toUriString(),
-                ViewStatsDto[].class
-        );
+            UriComponentsBuilder builder = UriComponentsBuilder
+                    .fromHttpUrl(statsUrl + "/stats")
+                    .queryParam("start", start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                    .queryParam("end", end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                    .queryParam("unique", unique);
 
-        ViewStatsDto[] body = response.getBody();
-        return body != null ? Arrays.asList(body) : List.of();
+            if (uris != null && !uris.isEmpty()) {
+                builder.queryParam("uris", String.join(",", uris));
+            }
+
+            String uri = builder.encode().toUriString();
+
+            ResponseEntity<ViewStatsDto[]> response = restTemplate.getForEntity(
+                    uri,
+                    ViewStatsDto[].class
+            );
+
+            ViewStatsDto[] body = response.getBody();
+            return body != null ? Arrays.asList(body) : List.of();
+
+
     }
 }

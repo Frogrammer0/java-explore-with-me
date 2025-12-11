@@ -2,6 +2,7 @@ package ru.practicum.ewm.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ public class NewEventDto {
     Boolean paid = false;
 
     @Builder.Default
+    @Positive
     Integer participantLimit = 0;
 
     @Builder.Default

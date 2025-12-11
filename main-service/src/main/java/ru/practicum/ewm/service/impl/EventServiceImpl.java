@@ -7,21 +7,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
+import ru.practicum.ewm.dto.ViewStatsDto;
 import ru.practicum.ewm.dto.event.*;
-import ru.practicum.ewm.exception.*;
+import ru.practicum.ewm.dto.request.EventConfirmedDto;
+import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.exception.BadRequestException;
+import ru.practicum.ewm.exception.ConflictException;
+import ru.practicum.ewm.exception.ForbiddenException;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.model.Category;
+import ru.practicum.ewm.mapper.RequestMapper;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.RequestsRepository;
-import ru.practicum.ewm.mapper.RequestMapper;
-import ru.practicum.ewm.service.EventService;
-import ru.practicum.ewm.dto.ViewStatsDto;
-import ru.practicum.ewm.dto.request.EventConfirmedDto;
-import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
-import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.repository.UserRepository;
+import ru.practicum.ewm.service.EventService;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -216,6 +218,7 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeEnd,
                                                 int from, int size) {
         log.info("получение админом событий пользователей ids = {} в EventServiceImpl", users);
+
         Pageable page = PageRequest.of(from / size, size);
         LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
         if ((users != null && users.isEmpty()) || (users.size() == 1 && users.getFirst() == 0)) users = null;
@@ -223,9 +226,14 @@ public class EventServiceImpl implements EventService {
         if ((categories != null && categories.isEmpty()) ||
                 (categories.size() == 1 && categories.getFirst() == 0)) categories = null;
 
-        return eventRepository.findAdminEvents(users, states, categories, start, rangeEnd, page).stream()
+        List<EventFullDto> events = eventRepository.findAdminEvents(users, states, categories, start, rangeEnd, page)
+                .stream()
                 .map(eventMapper::toEventFullDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        events = appendEventFullDto(events);
+
+        return events;
 
     }
 
@@ -233,12 +241,12 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateRequest) {
         log.info("изменение админом события id = {} в EventServiceImpl", eventId);
         Event event = getEventOrThrow(eventId);
+
         if (updateRequest.getStateAction() == StateAction.PUBLISH_EVENT) {
             if (event.getState() != EventState.PENDING) {
                 throw new ConflictException("не ожидает публикации событие id = " + event);
             }
             event.setState(EventState.PUBLISHED);
-            checkEventDate(updateRequest.getEventDate());
             event.setPublishedOn(LocalDateTime.now());
         } else if (updateRequest.getStateAction() == StateAction.REJECT_EVENT) {
             if (event.getState() == EventState.PUBLISHED) {
@@ -328,8 +336,6 @@ public class EventServiceImpl implements EventService {
     }
 
 
-
-
     private EventFullDto appendEventFullDto(EventFullDto eventDto) {
         log.info("добавление заявок и просмотров в EventFullDto id = {} в EventServiceImpl", eventDto.getId());
         Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId());
@@ -360,6 +366,7 @@ public class EventServiceImpl implements EventService {
                         EventConfirmedDto::getConfirmed
                 ));
 
+
         List<Long> eventIds = eventDtos.stream().map(EventShortDto::getId).toList();
         Map<Long, Long> views = getViewsByEvents(eventIds);
 
@@ -376,7 +383,7 @@ public class EventServiceImpl implements EventService {
 
 
     private List<EventFullDto> appendEventFullDto(List<EventFullDto> eventDtos) {
-        log.info("добавление заявок и просмотров в список EventFullDto ids = {} в EventServiceImpl", eventDtos);
+        log.info("добавление заявок и просмотров в список EventFullDto size = {} в EventServiceImpl", eventDtos.size());
         Map<Long, Long> confirmedMap = requestsRepository
                 .getConfirmedRequestsByEvents(eventDtos.stream().map(EventFullDto::getId).toList())
                 .stream()
@@ -384,6 +391,7 @@ public class EventServiceImpl implements EventService {
                         EventConfirmedDto::getEventId,
                         EventConfirmedDto::getConfirmed
                 ));
+
 
         List<Long> eventIds = eventDtos.stream().map(EventFullDto::getId).toList();
         Map<Long, Long> views = getViewsByEvents(eventIds);

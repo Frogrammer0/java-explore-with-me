@@ -19,10 +19,10 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(length = 2000)
     private String annotation;
 
-    @Column
+    @Column(length = 2000)
     private String description;
 
     @Column

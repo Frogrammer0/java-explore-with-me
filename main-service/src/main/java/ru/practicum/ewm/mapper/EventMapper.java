@@ -61,7 +61,7 @@ public class EventMapper {
                 .annotation(event.getAnnotation())
                 .title(event.getTitle())
                 .description(event.getDescription())
-                .categoryDto(categoryMapper.toCategoryDto(event.getCategory()))
+                .category(categoryMapper.toCategoryDto(event.getCategory()))
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
                 .createdOn(event.getCreatedOn())
@@ -69,6 +69,7 @@ public class EventMapper {
                 .initiator(userMapper.toUserShortDto(event.getInitiator()))
                 .location(event.getLocation())
                 .requestModeration(event.getRequestModeration())
+                .publishedOn(event.getPublishedOn())
                 .state(event.getState())
                 .build();
     }
@@ -88,7 +89,7 @@ public class EventMapper {
     public EventShortDto toEventShortDto(EventFullDto eventFullDto) {
         return EventShortDto.builder()
                 .annotation(eventFullDto.getAnnotation())
-                .categoryDto(eventFullDto.getCategoryDto())
+                .categoryDto(eventFullDto.getCategory())
                 .eventDate(eventFullDto.getEventDate())
                 .initiator(eventFullDto.getInitiator())
                 .paid(eventFullDto.getPaid())
