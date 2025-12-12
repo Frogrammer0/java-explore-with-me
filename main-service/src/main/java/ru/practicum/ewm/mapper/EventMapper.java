@@ -1,7 +1,6 @@
 package ru.practicum.ewm.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jca.support.LocalConnectionFactoryBean;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
