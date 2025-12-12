@@ -50,10 +50,10 @@ public class RequestServiceImpl implements RequestService {
         if (Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ConflictException("нельзя подавать заявку на свое событие");
         }
-
         if (!eventRepository.existsByIdAndState(eventId, EventState.PUBLISHED)) {
             throw new ConflictException("событие не опубликовано");
         }
+
         if (requestsRepository.existsByRequesterIdAndEventId(userId, eventId)) {
             throw new ConflictException("такая заявка уже существует");
         }
@@ -63,6 +63,7 @@ public class RequestServiceImpl implements RequestService {
                 == event.getParticipantLimit()) {
             throw new ConflictException("мест на данное событие больше нет");
         }
+
         Request request = Request.builder()
                 .requester(user)
                 .event(event)

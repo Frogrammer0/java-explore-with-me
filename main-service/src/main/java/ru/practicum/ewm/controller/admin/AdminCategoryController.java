@@ -34,6 +34,7 @@ public class AdminCategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long categoryId) {
         log.info("delete in AdminCategoryController categoryId = {}", categoryId);
         categoryService.delete(categoryId);

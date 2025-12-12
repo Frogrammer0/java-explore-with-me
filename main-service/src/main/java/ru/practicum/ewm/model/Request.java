@@ -29,6 +29,6 @@ public class Request {
     @Enumerated
     private RequestStatus status;
 
-    @Column
+    @Column(columnDefinition = "timestamp(6)")
     private LocalDateTime created;
 }

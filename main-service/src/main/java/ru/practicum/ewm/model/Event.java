@@ -28,13 +28,13 @@ public class Event {
     @Column(length = 120)
     private String title;
 
-    @Column
+    @Column(columnDefinition = "timestamp(6)")
     private LocalDateTime eventDate;
 
-    @Column
+    @Column(columnDefinition = "timestamp(6)")
     private LocalDateTime publishedOn;
 
-    @Column
+    @Column(columnDefinition = "timestamp(6)")
     private LocalDateTime createdOn;
 
     @Column

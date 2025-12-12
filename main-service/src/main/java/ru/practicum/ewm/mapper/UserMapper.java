@@ -1,14 +1,11 @@
 package ru.practicum.ewm.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.model.User;
 import ru.practicum.ewm.dto.user.NewUserRequest;
 import ru.practicum.ewm.dto.user.UserDto;
 import ru.practicum.ewm.dto.user.UserShortDto;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class UserMapper {
 

@@ -51,12 +51,13 @@ public class EventServiceImpl implements EventService {
     public EventFullDto create(Long userId, NewEventDto eventDto) {
         log.info("создание события в EventServiceImpl dto = {}", eventDto);
         User initiator = getUserOrThrow(userId);
+
+        log.info("---------------------------------------------------------- getLocation = {}, lat = {}, lon = {}", eventDto.getLocation(), eventDto.getLocation().getLat(), eventDto.getLocation().getLon());
         Category category = getCategoryOrThrow(eventDto.getCategory());
         checkEventDate(eventDto.getEventDate());
         Event event = eventMapper.toEvent(eventDto, initiator, category);
         eventRepository.save(event);
-
-        EventFullDto eventFullDto = eventMapper.toEventFullDto(event);
+        EventFullDto eventFullDto = eventMapper.toEventFullDto(eventRepository.save(event));
         eventFullDto.setConfirmedRequests(0L);
         eventFullDto.setViews(0L);
         return eventFullDto;

@@ -25,7 +25,7 @@ public class EventShortDto {
     @NotBlank
     String annotation;
 
-    CategoryDto categoryDto;
+    CategoryDto category;
 
     Long confirmedRequests;
 

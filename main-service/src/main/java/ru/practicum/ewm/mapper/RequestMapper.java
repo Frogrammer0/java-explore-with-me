@@ -1,14 +1,11 @@
 package ru.practicum.ewm.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Request;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
 import ru.practicum.ewm.model.User;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class RequestMapper {
 

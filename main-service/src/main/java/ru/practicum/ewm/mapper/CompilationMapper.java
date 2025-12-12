@@ -1,7 +1,6 @@
 package ru.practicum.ewm.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.compilation.CompilationDto;
 import ru.practicum.ewm.dto.compilation.NewCompilationDto;
@@ -11,10 +10,10 @@ import ru.practicum.ewm.model.Event;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Component
 public class CompilationMapper {
-    EventMapper eventMapper;
+    private final EventMapper eventMapper;
 
 
     public Compilation toCompilation(NewCompilationDto newCompDto, List<Event> events) {

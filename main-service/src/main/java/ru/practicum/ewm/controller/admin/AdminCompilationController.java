@@ -11,7 +11,7 @@ import ru.practicum.ewm.service.CompilationService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/compilation")
+@RequestMapping("/admin/compilations")
 @Slf4j
 public class AdminCompilationController {
 

@@ -32,11 +32,15 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto create(NewCompilationDto compilationDto) {
         log.info("создание подборки в CompilationServiceImpl dto = {}", compilationDto);
-        List<Event> events = eventRepository.findAllById(compilationDto.getEvents());
+        List<Event> events = eventRepository.findAllByIdIn(compilationDto.getEvents());
         if (compilationDto.getEvents().size() < events.size()) {
             throw new NotFoundException("найдены не все события из подборки");
         }
+        log.info("work work work events = {}", events);                                         /////////////////////
         Compilation compilation = compilationMapper.toCompilation(compilationDto, events);
+        log.info("work work work compilation = {}", compilation);                                                  /////////////////////
+
+        log.info("work work work compilationRepository.save(compilation) = {}", compilationRepository.save(compilation));                                                  /////////////////////
 
         return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }

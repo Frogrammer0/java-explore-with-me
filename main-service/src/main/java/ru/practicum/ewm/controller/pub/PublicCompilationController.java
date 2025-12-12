@@ -9,11 +9,11 @@ import ru.practicum.ewm.service.CompilationService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/compilation")
+@RequestMapping("/compilations")
 @RequiredArgsConstructor
 @Slf4j
 public class PublicCompilationController {
-    CompilationService compilationService;
+    private final CompilationService compilationService;
 
     @GetMapping
     public List<CompilationDto> getCompilations(@RequestParam(defaultValue = "0") int from,

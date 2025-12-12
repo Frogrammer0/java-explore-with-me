@@ -1,29 +1,22 @@
 package ru.practicum.ewm.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jca.support.LocalConnectionFactoryBean;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
 import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
-import ru.practicum.ewm.model.Event;
-import ru.practicum.ewm.model.EventState;
-import ru.practicum.ewm.model.User;
+import ru.practicum.ewm.model.*;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Component
 public class EventMapper {
 
-    @Autowired
-    private CategoryMapper categoryMapper;
-
-    @Autowired
-    private UserMapper userMapper;
+    private final CategoryMapper categoryMapper;
+    private final UserMapper userMapper;
 
     public Event toEvent(NewEventDto eventDto, User initiator, Category category) {
         return Event.builder()
@@ -38,6 +31,7 @@ public class EventMapper {
                 .state(EventState.PENDING)
                 .initiator(initiator)
                 .category(category)
+                .location(eventDto.getLocation())
                 .build();
     }
 
@@ -78,7 +72,7 @@ public class EventMapper {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
-                .categoryDto(categoryMapper.toCategoryDto(event.getCategory()))
+                .category(categoryMapper.toCategoryDto(event.getCategory()))
                 .eventDate(event.getEventDate())
                 .initiator(userMapper.toUserShortDto(event.getInitiator()))
                 .paid(event.getPaid())
@@ -89,7 +83,7 @@ public class EventMapper {
     public EventShortDto toEventShortDto(EventFullDto eventFullDto) {
         return EventShortDto.builder()
                 .annotation(eventFullDto.getAnnotation())
-                .categoryDto(eventFullDto.getCategory())
+                .category(eventFullDto.getCategory())
                 .eventDate(eventFullDto.getEventDate())
                 .initiator(eventFullDto.getInitiator())
                 .paid(eventFullDto.getPaid())
