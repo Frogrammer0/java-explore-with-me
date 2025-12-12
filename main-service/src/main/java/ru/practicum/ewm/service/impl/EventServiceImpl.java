@@ -185,7 +185,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateRequest.getAction() == RequestAction.CONFIRM) {
             AtomicLong limit = new AtomicLong(event.getParticipantLimit() -
-                    requestsRepository.countConfirmedRequests(eventId));
+                    requestsRepository.countConfirmedRequests(eventId, RequestStatus.CONFIRMED));
 
             requests.forEach(request -> {
                         if (limit.get() > 0) {
@@ -221,10 +221,16 @@ public class EventServiceImpl implements EventService {
 
         Pageable page = PageRequest.of(from / size, size);
         LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
-        if ((users != null && users.isEmpty()) || (users.size() == 1 && users.getFirst() == 0)) users = null;
+        if ((users != null)) {
+            if (users.size() <= 1 && users.getFirst() == 0) users = null;
+        }
+
         if (states != null && states.isEmpty()) states = null;
-        if ((categories != null && categories.isEmpty()) ||
-                (categories.size() == 1 && categories.getFirst() == 0)) categories = null;
+
+
+        if ((categories != null)) {
+            if (categories.size() <= 1 && categories.getFirst() == 0) categories = null;
+        }
 
         List<EventFullDto> events = eventRepository.findAdminEvents(users, states, categories, start, rangeEnd, page)
                 .stream()
@@ -299,10 +305,16 @@ public class EventServiceImpl implements EventService {
 
         LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
 
-        List<EventFullDto> events = eventRepository.findPublicEvents(text, categories, paid, start, rangeEnd, page)
+        log.info("------------------------ LOOOOOOOK EEETTTTT MMMMEEEEE text = {}, categories = {}, paid = {}, start = {}, rangeEnd = {}, page = {}", text, categories, paid, start, rangeEnd, page);
+
+
+        List<EventFullDto> events = eventRepository.findPublicEvents(EventState.PUBLISHED, text, categories, paid, start,
+                        rangeEnd, page)
                 .stream()
                 .map(eventMapper::toEventFullDto)
                 .toList();
+
+        log.info("------------------------ LOOOOOOOK EEETTTTT MMMMEEEEE events = {}", events);
 
         events = appendEventFullDto(events);
 
@@ -334,14 +346,13 @@ public class EventServiceImpl implements EventService {
         }
 
 
-
         return appendEventFullDto(eventFullDto);
     }
 
 
     private EventFullDto appendEventFullDto(EventFullDto eventDto) {
         log.info("добавление заявок и просмотров в EventFullDto id = {} в EventServiceImpl", eventDto.getId());
-        Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId());
+        Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId(), RequestStatus.CONFIRMED);
         Long views = getViewsByEvent(eventDto.getId());
         eventDto.setConfirmedRequests(confirmed);
         eventDto.setViews(views);
@@ -351,7 +362,7 @@ public class EventServiceImpl implements EventService {
 
     private EventShortDto appendEventShortDto(EventShortDto eventDto) {
         log.info("добавление заявок и просмотров в EventShortDto id = {} в EventServiceImpl", eventDto.getId());
-        Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId());
+        Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId(), RequestStatus.CONFIRMED);
         Long views = getViewsByEvent(eventDto.getId());
         eventDto.setConfirmedRequests(confirmed);
         eventDto.setViews(views);

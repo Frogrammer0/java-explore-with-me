@@ -46,16 +46,17 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("""
             select e
             from Event e
-            where e.state = ru.practicum.ewm.model.EventState.PUBLISHED
+            where e.state = :state
             and (lower(e.annotation) LIKE lower(concat('%', :text, '%'))
-            or lower(e.description) LIKE lower(concat('%', :text, '%')))
+                or lower(e.description) LIKE lower(concat('%', :text, '%')))
             and (:categories is NULL or e.category.id IN :categories)
-            and (e.paid = :paid)
+            and (:paid is NULL or e.paid = :paid)
             and (e.eventDate >= :rangeStart)
             and (e.eventDate <= coalesce(:rangeEnd, e.eventDate))
             order by e.eventDate asc
             """)
-    List<Event> findPublicEvents(@Param("text") String text,
+    List<Event> findPublicEvents(@Param("state") EventState state,
+                                 @Param("text") String text,
                                  @Param("categories") List<Long> categories,
                                  @Param("paid") Boolean paid,
                                  @Param("rangeStart") LocalDateTime rangeStart,

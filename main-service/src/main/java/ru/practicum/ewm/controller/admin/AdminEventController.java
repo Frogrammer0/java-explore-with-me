@@ -24,9 +24,9 @@ public class AdminEventController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventFullDto> getEvents(@RequestParam List<Long> users,
-                                        @RequestParam List<String> states,
-                                        @RequestParam List<Long> categories,
+    public List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
+                                        @RequestParam(required = false) List<String> states,
+                                        @RequestParam(required = false) List<Long> categories,
                                         @RequestParam(required = false)
                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                         LocalDateTime rangeStart,
@@ -36,8 +36,10 @@ public class AdminEventController {
                                         @RequestParam(defaultValue = "0") int from,
                                         @RequestParam(defaultValue = "10") int size) {
         log.info("getEvents in AdminEventController");
-        List<EventState> stateList = states.stream().map(EventState::valueOf).toList();
-
+        List<EventState> stateList = List.of();
+        if (states != null && !states.isEmpty()) {
+            stateList = states.stream().map(EventState::valueOf).toList();
+        }
         return eventService.getEventsForAdmin(users, stateList, categories, rangeStart, rangeEnd, from, size);
     }
 

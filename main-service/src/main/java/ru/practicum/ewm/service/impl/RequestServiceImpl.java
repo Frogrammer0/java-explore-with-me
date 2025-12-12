@@ -59,7 +59,8 @@ public class RequestServiceImpl implements RequestService {
         }
 
 
-        if (requestsRepository.countConfirmedRequests(eventId) == event.getParticipantLimit()) {
+        if (requestsRepository.countConfirmedRequests(eventId, RequestStatus.CONFIRMED)
+                == event.getParticipantLimit()) {
             throw new ConflictException("мест на данное событие больше нет");
         }
         Request request = Request.builder()

@@ -28,6 +28,9 @@ public class PrivateEventController {
     public EventFullDto create(@PathVariable Long userId,
                                @RequestBody @Valid NewEventDto eventDto) {
         log.info("create in PrivateEventController");
+        if (eventDto.getPaid() == null) eventDto.setPaid(false);
+        if (eventDto.getRequestModeration() == null) eventDto.setRequestModeration(true);
+        if (eventDto.getParticipantLimit() == null) eventDto.setParticipantLimit(0);
         return eventService.create(userId, eventDto);
     }
 

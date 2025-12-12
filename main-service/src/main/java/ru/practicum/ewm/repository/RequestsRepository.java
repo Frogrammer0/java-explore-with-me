@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.practicum.ewm.dto.request.EventConfirmedDto;
 import ru.practicum.ewm.model.Request;
 import ru.practicum.ewm.model.RequestStatus;
-import ru.practicum.ewm.dto.request.EventConfirmedDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +29,10 @@ public interface RequestsRepository extends JpaRepository<Request, Long> {
     @Query(value = """
             select count(r)
             from Request r
-            where r.event.id = :eventId AND r.status = ru.practicum.ewm.model.RequestStatus.CONFIRMED
+            where r.event.id = :eventId AND r.status = :status
             """)
-    Long countConfirmedRequests(@Param("eventId") Long eventId);
+    Long countConfirmedRequests(@Param("eventId") Long eventId,
+                                @Param("status") RequestStatus status);
 
     @Query(value = """
             select new ru.practicum.ewm.dto.request.EventConfirmedDto(e.id, COUNT(r))

@@ -19,10 +19,10 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 2000)
+    @Column(length = 2000, columnDefinition = "TEXT")
     private String annotation;
 
-    @Column(length = 7000)
+    @Column(length = 7000, columnDefinition = "TEXT")
     private String description;
 
     @Column(length = 120)
@@ -47,7 +47,7 @@ public class Event {
     private Boolean requestModeration;
 
     @Column
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private EventState state;
 
     @ManyToOne(fetch = FetchType.LAZY)

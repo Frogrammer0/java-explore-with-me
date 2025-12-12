@@ -1,6 +1,8 @@
 package ru.practicum.ewm.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -34,15 +36,12 @@ public class NewEventDto {
 
     Location location;
 
-    @Builder.Default
-    Boolean paid = false;
+    Boolean paid;
 
-    @Builder.Default
     @Positive
-    Integer participantLimit = 0;
+    Integer participantLimit;
 
-    @Builder.Default
-    Boolean requestModeration = true;
+    Boolean requestModeration;
 
     @NotBlank
     @Size(min = 3, max = 120, message = "неверная длина названия")
