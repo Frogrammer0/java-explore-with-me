@@ -52,7 +52,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         if (!eventRepository.existsByIdAndState(eventId, EventState.PUBLISHED)) {
-            throw new NotFoundException("событие не опубликовано");
+            throw new ConflictException("событие не опубликовано");
         }
         if (requestsRepository.existsByRequesterIdAndEventId(userId, eventId)) {
             throw new ConflictException("такая заявка уже существует");
