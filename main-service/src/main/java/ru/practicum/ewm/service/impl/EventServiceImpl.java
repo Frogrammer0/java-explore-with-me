@@ -326,13 +326,16 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public EventFullDto getPublishedEventById(Long eventId) {
         log.info("получение событий getPublishedEventById c eventId = {} в EventServiceImpl", eventId);
+
         EventFullDto eventFullDto = eventMapper.toEventFullDto(getEventOrThrow(eventId));
 
         if (eventFullDto.getState() != EventState.PUBLISHED) {
             throw new NotFoundException("не опубликовано событие с id = " + eventId);
         }
 
-        return eventFullDto;
+
+
+        return appendEventFullDto(eventFullDto);
     }
 
 
@@ -480,7 +483,7 @@ public class EventServiceImpl implements EventService {
 
     private void checkEventDate(LocalDateTime date) {
         if (date.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("дата события должна быть не раньше чем через 2 часа");
+            throw new BadRequestException("дата события должна быть не раньше чем через 2 часа");
         }
     }
 

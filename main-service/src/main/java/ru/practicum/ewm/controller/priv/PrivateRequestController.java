@@ -3,6 +3,7 @@ package ru.practicum.ewm.controller.priv;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
@@ -28,6 +29,7 @@ public class PrivateRequestController {
     }
 
     @PostMapping("/requests")
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto create(@PathVariable Long userId,
                                           @RequestParam(name = "eventId") @NotNull Long eventId) {
         log.info("create in PrivateRequestController");

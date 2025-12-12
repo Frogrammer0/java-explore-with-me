@@ -40,5 +40,6 @@ public class UpdateEventAdminRequest {
 
     StateAction stateAction;
 
+    @Size(min = 3, max = 120, message = "неверная длина названия")
     String title;
 }

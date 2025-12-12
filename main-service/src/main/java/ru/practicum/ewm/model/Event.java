@@ -22,10 +22,10 @@ public class Event {
     @Column(length = 2000)
     private String annotation;
 
-    @Column(length = 2000)
+    @Column(length = 7000)
     private String description;
 
-    @Column
+    @Column(length = 120)
     private String title;
 
     @Column
