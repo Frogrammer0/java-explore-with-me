@@ -112,6 +112,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public EventRequestStatusUpdateResult updateStatuses(Long userId, Long eventId,
                                                          EventRequestStatusUpdateRequest updateRequests) {
+        log.info("изменение статусов заявок события id = {}  от пользователя id = {} в RequestServiceImpl", eventId, userId);
         Event event = getEventOrThrow(eventId);
 
         if (!Objects.equals(event.getInitiator().getId(), userId)) {

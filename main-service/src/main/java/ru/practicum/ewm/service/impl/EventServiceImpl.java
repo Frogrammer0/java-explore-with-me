@@ -51,8 +51,6 @@ public class EventServiceImpl implements EventService {
     public EventFullDto create(Long userId, NewEventDto eventDto) {
         log.info("создание события в EventServiceImpl dto = {}", eventDto);
         User initiator = getUserOrThrow(userId);
-
-        log.info("---------------------------------------------------------- getLocation = {}, lat = {}, lon = {}", eventDto.getLocation(), eventDto.getLocation().getLat(), eventDto.getLocation().getLon());
         Category category = getCategoryOrThrow(eventDto.getCategory());
         checkEventDate(eventDto.getEventDate());
         Event event = eventMapper.toEvent(eventDto, initiator, category);
@@ -305,17 +303,14 @@ public class EventServiceImpl implements EventService {
         Pageable page = PageRequest.of(from / size, size);
 
         LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
+        LocalDateTime end = (rangeEnd != null) ? rangeStart : LocalDateTime.now().plusYears(1000);
+        String searchText = (text != null) ? text : "";
 
-        log.info("------------------------ LOOOOOOOK EEETTTTT MMMMEEEEE text = {}, categories = {}, paid = {}, start = {}, rangeEnd = {}, page = {}", text, categories, paid, start, rangeEnd, page);
-
-
-        List<EventFullDto> events = eventRepository.findPublicEvents(EventState.PUBLISHED, text, categories, paid, start,
-                        rangeEnd, page)
+        List<EventFullDto> events = eventRepository.findPublicEvents(EventState.PUBLISHED, searchText,
+                        categories, paid, start, end, page)
                 .stream()
                 .map(eventMapper::toEventFullDto)
                 .toList();
-
-        log.info("------------------------ LOOOOOOOK EEETTTTT MMMMEEEEE events = {}", events);
 
         events = appendEventFullDto(events);
 

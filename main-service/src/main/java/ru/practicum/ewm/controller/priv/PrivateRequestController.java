@@ -55,6 +55,7 @@ public class PrivateRequestController {
             @PathVariable Long userId,
             @PathVariable Long eventId,
             @RequestBody(required = false) EventRequestStatusUpdateRequest updateRequest) {
+        log.info("editRequestsByEvent in PrivateRequestController");
         return requestService.updateStatuses(userId, eventId, updateRequest);
     }
 }
