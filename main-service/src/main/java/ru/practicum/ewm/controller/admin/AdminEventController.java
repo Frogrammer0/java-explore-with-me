@@ -40,7 +40,7 @@ public class AdminEventController {
                                         @RequestParam(defaultValue = "10") int size,
                                         HttpServletRequest request) {
         log.info("getEvents in AdminEventController");
-        //statsService.sendHit(request);
+        statsService.sendHit(request);
 
         List<EventState> stateList = List.of();
         if (states != null && !states.isEmpty()) {
@@ -51,8 +51,10 @@ public class AdminEventController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto edit(@PathVariable Long eventId,
-                             @RequestBody @Valid UpdateEventAdminRequest dto) {
+                             @RequestBody @Valid UpdateEventAdminRequest dto,
+                             HttpServletRequest request) {
         log.info("edit in AdminEventController");
+        statsService.sendHit(request);
         return eventService.updateEventByAdmin(eventId, dto);
     }
 
