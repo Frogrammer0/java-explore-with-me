@@ -114,11 +114,10 @@ public class RequestServiceImpl implements RequestService {
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequestByEvent(Long userId, Long eventId) {
         log.info("получение заявок события id = {}  от пользователя id = {} в RequestServiceImpl", eventId, userId);
+
         if (!eventRepository.existsByIdAndInitiatorId(userId, eventId)) {
             throw new NotFoundException("событие с id = " + eventId + " и инициатором " + userId + " не найдено");
         }
-
-
         return requestsRepository.findAllByEventId(eventId).stream()
                 .map(requestMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());

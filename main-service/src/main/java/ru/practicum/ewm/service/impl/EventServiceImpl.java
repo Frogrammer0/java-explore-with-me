@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.dto.ViewStatsDto;
 import ru.practicum.ewm.dto.event.*;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional
 public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
@@ -62,7 +60,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> getUserEvents(long userId, int from, int size) {
         log.info("получение события в EventServiceImpl для userId = {}", userId);
         Pageable page = PageRequest.of(from / size, size);
@@ -73,7 +70,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EventFullDto getUserEventById(long userId, long eventId) {
         log.info("получение события id = {} в EventServiceImpl для userId = {}", eventId, userId);
         getUserOrThrow(userId);
@@ -208,7 +204,6 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    @Transactional(readOnly = true)
     @Override
     public List<EventFullDto> getEventsForAdmin(List<Long> users,
                                                 List<EventState> states,
@@ -294,7 +289,6 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    @Transactional(readOnly = true)
     public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, int from, int size) {
@@ -304,8 +298,8 @@ public class EventServiceImpl implements EventService {
         }
         Pageable page = PageRequest.of(from / size, size);
 
-        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
-        LocalDateTime end = (rangeEnd != null) ? rangeStart : LocalDateTime.now().plusYears(1000);
+        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now().minusYears(100);
+        LocalDateTime end = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(100);
         String searchText = (text != null) ? text : "";
 
         List<EventFullDto> events = eventRepository.findPublicEvents(EventState.PUBLISHED, searchText,
@@ -314,7 +308,10 @@ public class EventServiceImpl implements EventService {
                 .map(eventMapper::toEventFullDto)
                 .toList();
 
+        log.info("------------------------------------------------------------------------------events = {} ", events);
         events = appendEventFullDto(events);
+
+
 
         if (onlyAvailable) {
             events = events.stream()
@@ -333,7 +330,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EventFullDto getPublishedEventById(Long eventId) {
         log.info("получение событий getPublishedEventById c eventId = {} в EventServiceImpl", eventId);
 
@@ -451,9 +447,11 @@ public class EventServiceImpl implements EventService {
                 .map(e -> "events/" + e)
                 .toList();
 
+        log.info("-------------------------------------------------------------------------- ------------------request = {}", uris);
+
         List<ViewStatsDto> stats = statsClient.getStats(
                 LocalDateTime.of(2000, 1, 1, 0, 0),
-                LocalDateTime.of(2100, 1, 1, 0, 0),
+                LocalDateTime.now(),
                 uris,
                 true
         );

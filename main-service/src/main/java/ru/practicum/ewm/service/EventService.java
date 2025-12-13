@@ -1,6 +1,5 @@
 package ru.practicum.ewm.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
@@ -22,7 +21,6 @@ public interface EventService {
     EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId,
                                                        EventRequestStatusUpdateRequest updateRequest);
 
-    @Transactional(readOnly = true)
     List<EventFullDto> getEventsForAdmin(List<Long> users,
                                          List<EventState> states,
                                          List<Long> categories,
