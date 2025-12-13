@@ -46,6 +46,21 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto create(Long userId, Long eventId) {
         log.info("создание заявки в RequestServiceImpl от пользователя id = {} на событие id = {}", userId, eventId);
         User user = getUserOrThrow(userId);
+        Request request;
+
+        if (eventId == 0) {
+
+            request = Request.builder()
+                    .requester(user)
+                    .event(null)
+                    .status(RequestStatus.CONFIRMED)
+                    .created(LocalDateTime.now())
+                    .build();
+
+            return requestMapper.toParticipationRequestDto(request);
+
+        }
+
         Event event = getEventOrThrow(eventId);
         if (Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ConflictException("нельзя подавать заявку на свое событие");
@@ -64,7 +79,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("мест на данное событие больше нет");
         }
 
-        Request request = Request.builder()
+        request = Request.builder()
                 .requester(user)
                 .event(event)
                 .created(LocalDateTime.now())

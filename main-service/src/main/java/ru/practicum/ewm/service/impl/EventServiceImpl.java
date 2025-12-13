@@ -251,12 +251,14 @@ public class EventServiceImpl implements EventService {
             if (event.getState() != EventState.PENDING) {
                 throw new ConflictException("не ожидает публикации событие id = " + event);
             }
+            log.info("публикация админом события id = {} в EventServiceImpl", eventId);
             event.setState(EventState.PUBLISHED);
             event.setPublishedOn(LocalDateTime.now());
         } else if (updateRequest.getStateAction() == StateAction.REJECT_EVENT) {
             if (event.getState() == EventState.PUBLISHED) {
                 throw new ConflictException("нельзя отменить опубликованное событие id = " + eventId);
             }
+            log.info("отклонение админом события id = {} в EventServiceImpl", eventId);
             event.setState(EventState.CANCELED);
         }
 
@@ -455,6 +457,9 @@ public class EventServiceImpl implements EventService {
                 uris,
                 true
         );
+
+
+        log.info("---------------------------------------------------------------------------------------stats = {} ", stats);
 
         return stats.stream().collect(Collectors.toMap(
                 s -> Long.valueOf(s.getUri().split("/")[2]),

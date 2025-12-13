@@ -1,5 +1,6 @@
 package ru.practicum.ewm.controller.admin;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.UpdateEventAdminRequest;
 import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.service.EventService;
+import ru.practicum.ewm.service.StatsService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.List;
 public class AdminEventController {
 
     private final EventService eventService;
+    private final StatsService statsService;
 
     @GetMapping
     public List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
@@ -34,8 +37,11 @@ public class AdminEventController {
                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                         LocalDateTime rangeEnd,
                                         @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size) {
+                                        @RequestParam(defaultValue = "10") int size,
+                                        HttpServletRequest request) {
         log.info("getEvents in AdminEventController");
+        //statsService.sendHit(request);
+
         List<EventState> stateList = List.of();
         if (states != null && !states.isEmpty()) {
             stateList = states.stream().map(EventState::valueOf).toList();
