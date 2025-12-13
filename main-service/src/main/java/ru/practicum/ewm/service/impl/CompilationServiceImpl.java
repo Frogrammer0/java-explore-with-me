@@ -1,0 +1,96 @@
+package ru.practicum.ewm.service.impl;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import ru.practicum.ewm.dto.compilation.CompilationDto;
+import ru.practicum.ewm.dto.compilation.NewCompilationDto;
+import ru.practicum.ewm.dto.compilation.UpdateCompilationRequest;
+import ru.practicum.ewm.exception.NotFoundException;
+import ru.practicum.ewm.mapper.CompilationMapper;
+import ru.practicum.ewm.model.Compilation;
+import ru.practicum.ewm.model.Event;
+import ru.practicum.ewm.repository.CompilationRepository;
+import ru.practicum.ewm.repository.EventRepository;
+import ru.practicum.ewm.service.CompilationService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class CompilationServiceImpl implements CompilationService {
+    private final CompilationRepository compilationRepository;
+    private final EventRepository eventRepository;
+    private final CompilationMapper compilationMapper;
+
+
+    @Override
+    public CompilationDto create(NewCompilationDto compilationDto) {
+        log.info("создание подборки в CompilationServiceImpl dto = {}", compilationDto);
+        List<Event> events = new ArrayList<>();
+        if (compilationDto.getEvents() != null) {
+            events = eventRepository.findAllByIdIn(compilationDto.getEvents());
+            if (compilationDto.getEvents().size() < events.size()) {
+                throw new NotFoundException("найдены не все события из подборки");
+            }
+        }
+        Compilation compilation = compilationMapper.toCompilation(compilationDto, events);
+        return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
+    }
+
+    @Override
+    public void delete(Long compId) {
+        log.info("удаление подборки в CompilationServiceImpl с id = {}", compId);
+        getCompilationOrThrow(compId);
+        compilationRepository.deleteById(compId);
+    }
+
+    @Override
+    public CompilationDto edit(Long compId, UpdateCompilationRequest compDto) {
+        log.info("изменение подборки в CompilationServiceImpl с id = {}", compId);
+        Compilation comp = getCompilationOrThrow(compId);
+
+        if (compDto.getTitle() != null) comp.setTitle(compDto.getTitle());
+        if (compDto.getPinned() != null) comp.setPinned(compDto.getPinned());
+        if (compDto.getEvents() != null && !compDto.getEvents().isEmpty()) {
+            comp.setEvents(eventRepository.findAllByIdIn(compDto.getEvents()));
+        }
+
+        return compilationMapper.toCompilationDto(compilationRepository.save(comp));
+    }
+
+    @Override
+    public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
+        log.info("получение подборки в CompilationServiceImpl с pinned = {}", pinned);
+
+        Pageable page = PageRequest.of(from / size, size);
+        if (pinned != null) {
+            return compilationRepository.findByPinned(pinned, page).stream()
+                    .map(compilationMapper::toCompilationDto)
+                    .collect(Collectors.toList());
+        } else {
+            return compilationRepository.findAll(page).stream()
+                    .map(compilationMapper::toCompilationDto)
+                    .collect(Collectors.toList());
+        }
+
+    }
+
+    @Override
+    public CompilationDto getCompilation(Long compId) {
+        log.info("получение подборки в CompilationServiceImpl с id = {}", compId);
+        return compilationMapper.toCompilationDto(getCompilationOrThrow(compId));
+    }
+
+
+    private Compilation getCompilationOrThrow(Long compId) {
+        return compilationRepository.findById(compId).orElseThrow(
+                () -> new NotFoundException("не найдена подборка с id =" + compId)
+        );
+    }
+}
