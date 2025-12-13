@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.mapper.CategoryMapper;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional
 @Validated
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
@@ -63,7 +61,6 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<CategoryDto> getAllCategories(int from, int size) {
         log.info("получение категорий в CategoryServiceImpl с {}, в размере {}", from, size);
@@ -73,7 +70,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     @Override
     public CategoryDto getCategoryById(Long id) {
         log.info("получение категории в CategoryServiceImpl с id = {}", id);

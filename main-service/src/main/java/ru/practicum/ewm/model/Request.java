@@ -26,7 +26,7 @@ public class Request {
     private Event event;
 
     @Column
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private RequestStatus status;
 
     @Column(columnDefinition = "timestamp(6)")

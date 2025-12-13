@@ -3,6 +3,8 @@ package ru.practicum.ewm.dto.request;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class EventRequestStatusUpdateResult {
 
-    List<ParticipationRequestDto> confirmedRequests;
+    List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
 
-    List<ParticipationRequestDto> rejectedRequests;
+    List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
 }

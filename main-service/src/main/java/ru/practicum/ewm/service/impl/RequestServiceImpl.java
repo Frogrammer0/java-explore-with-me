@@ -3,7 +3,6 @@ package ru.practicum.ewm.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.ewm.dto.request.ParticipationRequestDto;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional
 public class RequestServiceImpl implements RequestService {
     private final RequestsRepository requestsRepository;
     private final UserRepository userRepository;
@@ -34,7 +32,6 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         getUserOrThrow(userId);
         return requestsRepository.findAllByRequesterId(userId).stream()
@@ -111,7 +108,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequestByEvent(Long userId, Long eventId) {
         log.info("получение заявок события id = {}  от пользователя id = {} в RequestServiceImpl", eventId, userId);
 
@@ -128,23 +124,28 @@ public class RequestServiceImpl implements RequestService {
                                                          EventRequestStatusUpdateRequest updateRequests) {
         log.info("изменение статусов заявок события id = {}  от пользователя id = {} в RequestServiceImpl", eventId, userId);
         Event event = getEventOrThrow(eventId);
+        Long createdRequests = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.PENDING);
+
+        if (createdRequests >= event.getParticipantLimit()) {
+            throw new ConflictException("число заявок превышает лимит участников");
+        }
+
+        Long alreadyConfirmed = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+        int newConfirmed = updateRequests.getRequestIds().size();
+
+        if (alreadyConfirmed + newConfirmed > event.getParticipantLimit()) {
+            throw new ConflictException("число заявок больше лимита участников");
+        }
 
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenException("пользователь id = " + userId +
                     " не является создателем события id = " + eventId);
         }
 
-        Long alreadyConfirmed = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-        int newConfirmed = updateRequests.getRequestsId().size();
-
-        if (alreadyConfirmed + newConfirmed > event.getParticipantLimit()) {
-            throw new ConflictException("число заявок больше лимита участников");
-        }
-
-        List<Request> requests = requestsRepository.findAllByIdIn(updateRequests.getRequestsId());
+        List<Request> requests = requestsRepository.findAllByIdIn(updateRequests.getRequestIds());
         EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
 
-        if (updateRequests.getAction() == RequestAction.CONFIRM) {
+        if (updateRequests.getStatus() == RequestAction.CONFIRMED) {
             requests.forEach(request -> {
                 if (request.getStatus() == RequestStatus.PENDING) {
                     request.setStatus(RequestStatus.CONFIRMED);
@@ -153,7 +154,7 @@ public class RequestServiceImpl implements RequestService {
                     updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
                 }
             });
-        } else if (updateRequests.getAction() == RequestAction.REJECT) {
+        } else if (updateRequests.getStatus() == RequestAction.REJECTED) {
             requests.forEach(request -> {
                 if (request.getStatus() != RequestStatus.REJECTED) {
                     request.setStatus(RequestStatus.REJECTED);

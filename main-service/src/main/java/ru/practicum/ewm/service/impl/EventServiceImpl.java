@@ -171,14 +171,14 @@ public class EventServiceImpl implements EventService {
         Event event = getEventOrThrow(eventId);
         checkInitiator(userId, event);
 
-        List<Request> requests = requestsRepository.findAllByIdIn(updateRequest.getRequestsId());
+        List<Request> requests = requestsRepository.findAllByIdIn(updateRequest.getRequestIds());
         requests.forEach(r -> {
             if (r.getStatus() == RequestStatus.CONFIRMED || r.getStatus() == RequestStatus.REJECTED) {
                 throw new ConflictException("в списке имеются уже обработанные заявки");
             }
         });
 
-        if (updateRequest.getAction() == RequestAction.CONFIRM) {
+        if (updateRequest.getStatus() == RequestAction.CONFIRMED) {
             AtomicLong limit = new AtomicLong(event.getParticipantLimit() -
                     requestsRepository.countConfirmedRequests(eventId, RequestStatus.CONFIRMED));
 
@@ -189,12 +189,12 @@ public class EventServiceImpl implements EventService {
                         }
 
                         if ((result.getRejectedRequests().size() + result.getConfirmedRequests().size()) <
-                                updateRequest.getRequestsId().size()) {
+                                updateRequest.getRequestIds().size()) {
                             result.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
                         }
                     }
             );
-        } else if (updateRequest.getAction() == RequestAction.REJECT) {
+        } else if (updateRequest.getStatus() == RequestAction.REJECTED) {
             requests.forEach(request -> {
                 result.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
             });
