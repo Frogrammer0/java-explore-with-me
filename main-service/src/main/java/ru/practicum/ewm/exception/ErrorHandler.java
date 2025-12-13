@@ -24,7 +24,7 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason("Требуемый объект не найден")
                 .status(HttpStatus.NOT_FOUND)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason("Конфликт полей или объектов")
                 .status(HttpStatus.CONFLICT)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -48,7 +48,7 @@ public class ErrorHandler {
                 .message(e.getMessage() + e.getLocalizedMessage())
                 .reason("Неверный запрос")
                 .status(HttpStatus.BAD_REQUEST)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -60,7 +60,7 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason("Ошибка доступа")
                 .status(HttpStatus.FORBIDDEN)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -73,7 +73,7 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason("Отсутствует требуемый параметр")
                 .status(HttpStatus.BAD_REQUEST)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -85,7 +85,7 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason("Некорректный формат данных")
                 .status(HttpStatus.BAD_REQUEST)
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -98,7 +98,7 @@ public class ErrorHandler {
                 .reason("Некорректный формат данных")
                 .message(e.getMessage())
                 .errors(List.of())
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 
@@ -110,7 +110,7 @@ public class ErrorHandler {
                 .reason("Некорректный формат данных")
                 .message(e.getMessage())
                 .errors(List.of())
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
     }
 

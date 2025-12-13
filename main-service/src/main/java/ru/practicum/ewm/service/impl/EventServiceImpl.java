@@ -214,7 +214,7 @@ public class EventServiceImpl implements EventService {
         log.info("получение админом событий пользователей ids = {} в EventServiceImpl", users);
 
         Pageable page = PageRequest.of(from / size, size);
-        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now();
+        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now().withNano(0);
         if ((users != null)) {
             if (users.size() <= 1 && users.getFirst() == 0) users = null;
         }
@@ -248,7 +248,7 @@ public class EventServiceImpl implements EventService {
             }
             log.info("публикация админом события id = {} в EventServiceImpl", eventId);
             event.setState(EventState.PUBLISHED);
-            event.setPublishedOn(LocalDateTime.now());
+            event.setPublishedOn(LocalDateTime.now().withNano(0));
         } else if (updateRequest.getStateAction() == StateAction.REJECT_EVENT) {
             if (event.getState() == EventState.PUBLISHED) {
                 throw new ConflictException("нельзя отменить опубликованное событие id = " + eventId);
@@ -298,8 +298,9 @@ public class EventServiceImpl implements EventService {
         }
         Pageable page = PageRequest.of(from / size, size);
 
-        LocalDateTime start = (rangeStart != null) ? rangeStart : LocalDateTime.now().minusYears(100);
-        LocalDateTime end = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().plusYears(100);
+        LocalDateTime start = (rangeStart != null) ? rangeStart :
+                LocalDateTime.now().withNano(0).minusYears(100);
+        LocalDateTime end = (rangeEnd != null) ? rangeEnd : LocalDateTime.now().withNano(0).plusYears(100);
         String searchText = (text != null) ? text : "";
 
         List<EventFullDto> events = eventRepository.findPublicEvents(EventState.PUBLISHED, searchText,
@@ -308,7 +309,6 @@ public class EventServiceImpl implements EventService {
                 .map(eventMapper::toEventFullDto)
                 .toList();
 
-        log.info("------------------------------------------------------------------------------events = {} ", events);
         events = appendEventFullDto(events);
 
 
@@ -447,17 +447,15 @@ public class EventServiceImpl implements EventService {
                 .map(e -> "events/" + e)
                 .toList();
 
-        log.info("-------------------------------------------------------------------------- ------------------request = {}", uris);
-
         List<ViewStatsDto> stats = statsClient.getStats(
                 LocalDateTime.of(2000, 1, 1, 0, 0),
-                LocalDateTime.now(),
+                LocalDateTime.now().withNano(0),
                 uris,
                 true
         );
 
+        log.info("------------------------------------------------------------- stats = {}", stats);
 
-        log.info("---------------------------------------------------------------------------------------stats = {} ", stats);
 
         return stats.stream().collect(Collectors.toMap(
                 s -> Long.valueOf(s.getUri().split("/")[2]),
@@ -492,7 +490,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkEventDate(LocalDateTime date) {
-        if (date.isBefore(LocalDateTime.now().plusHours(2))) {
+        if (date.isBefore(LocalDateTime.now().withNano(0).plusHours(2))) {
             throw new BadRequestException("дата события должна быть не раньше чем через 2 часа");
         }
     }

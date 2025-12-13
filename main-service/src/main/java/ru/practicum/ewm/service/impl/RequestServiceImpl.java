@@ -51,10 +51,10 @@ public class RequestServiceImpl implements RequestService {
                     .requester(user)
                     .event(null)
                     .status(RequestStatus.CONFIRMED)
-                    .created(LocalDateTime.now())
+                    .created(LocalDateTime.now().withNano(0))
                     .build();
 
-            return requestMapper.toParticipationRequestDto(request);
+            return requestMapper.toParticipationRequestDto(requestsRepository.save(request));
 
         }
 
@@ -79,7 +79,7 @@ public class RequestServiceImpl implements RequestService {
         request = Request.builder()
                 .requester(user)
                 .event(event)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.now().withNano(0))
                 .build();
 
         if (event.getRequestModeration()) {
@@ -149,6 +149,7 @@ public class RequestServiceImpl implements RequestService {
             requests.forEach(request -> {
                 if (request.getStatus() == RequestStatus.PENDING) {
                     request.setStatus(RequestStatus.CONFIRMED);
+                    requestsRepository.save(request);
                     updateResult.getConfirmedRequests().add(requestMapper.toParticipationRequestDto(request));
                 } else {
                     updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
@@ -158,6 +159,7 @@ public class RequestServiceImpl implements RequestService {
             requests.forEach(request -> {
                 if (request.getStatus() != RequestStatus.REJECTED) {
                     request.setStatus(RequestStatus.REJECTED);
+                    requestsRepository.save(request);
                 }
                 updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
             });
@@ -176,6 +178,5 @@ public class RequestServiceImpl implements RequestService {
                 () -> new NotFoundException("не найден пользователь с id = " + userId)
         );
     }
-
 
 }

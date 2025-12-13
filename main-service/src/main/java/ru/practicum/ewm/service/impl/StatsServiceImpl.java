@@ -25,7 +25,7 @@ public class StatsServiceImpl implements StatsService {
                 app,
                 request.getRequestURI(),
                 request.getRemoteAddr(),
-                LocalDateTime.now()
+                LocalDateTime.now().withNano(0)
         );
         statsClient.sendHit(dto);
     }

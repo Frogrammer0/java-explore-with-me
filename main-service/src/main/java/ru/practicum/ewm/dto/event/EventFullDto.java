@@ -50,7 +50,6 @@ public class EventFullDto {
 
     Location location;
 
-    @Builder.Default
     Boolean requestModeration = true;
 
     Long confirmedRequests;

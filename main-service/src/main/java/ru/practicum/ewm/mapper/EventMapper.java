@@ -23,7 +23,7 @@ public class EventMapper {
                 .description(eventDto.getDescription())
                 .title(eventDto.getTitle())
                 .eventDate(eventDto.getEventDate())
-                .createdOn(LocalDateTime.now())
+                .createdOn(LocalDateTime.now().withNano(0))
                 .paid(eventDto.getPaid())
                 .participantLimit(eventDto.getParticipantLimit())
                 .requestModeration(eventDto.getRequestModeration())

@@ -17,11 +17,12 @@ public class ParticipationRequestDto {
 
     Long id;
 
+    Long requester;
+
     Long event;
 
-    Long requester;
+    RequestStatus status;
 
     LocalDateTime created;
 
-    RequestStatus status;
 }
