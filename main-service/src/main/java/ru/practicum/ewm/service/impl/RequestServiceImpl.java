@@ -70,8 +70,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("такая заявка уже существует");
         }
 
-
-        if (requestsRepository.countConfirmedRequests(eventId, RequestStatus.CONFIRMED)
+        if (requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)
                 == event.getParticipantLimit()) {
             throw new ConflictException("мест на данное событие больше нет");
         }
@@ -126,50 +125,68 @@ public class RequestServiceImpl implements RequestService {
                 eventId, userId);
 
         Event event = getEventOrThrow(eventId);
-        EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
-        Long createdRequests = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.PENDING);
-        Long alreadyConfirmed = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-
-        if (createdRequests >= event.getParticipantLimit()) {
-            throw new ConflictException("число заявок превышает лимит участников");
-        }
 
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new ForbiddenException("пользователь id = " + userId +
                     " не является создателем события id = " + eventId);
         }
 
-        if (updateRequests != null) {
-            int newConfirmed = updateRequests.getRequestIds().size();
+        if (updateRequests != null &&
+                updateRequests.getStatus() == RequestAction.CONFIRMED &&
+                event.getParticipantLimit() != 0 &&
+                requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.PENDING)
+                        + requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)
+                        > event.getParticipantLimit()) {
 
-            if (alreadyConfirmed + newConfirmed > event.getParticipantLimit()) {
-                throw new ConflictException("число заявок больше лимита участников");
-            }
+            throw new ConflictException("лимит участников события исчерпан");
+        }
 
+        EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
 
-            List<Request> requests = requestsRepository.findAllByIdIn(updateRequests.getRequestIds());
+        if (updateRequests == null) {
+            return updateResult;
+        }
 
-            if (updateRequests.getStatus() == RequestAction.CONFIRMED) {
-                requests.forEach(request -> {
-                    if (request.getStatus() == RequestStatus.PENDING) {
-                        request.setStatus(RequestStatus.CONFIRMED);
-                        requestsRepository.save(request);
-                        updateResult.getConfirmedRequests().add(requestMapper.toParticipationRequestDto(request));
-                    } else {
-                        updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
-                    }
-                });
-            } else if (updateRequests.getStatus() == RequestAction.REJECTED) {
-                requests.forEach(request -> {
-                    if (request.getStatus() != RequestStatus.REJECTED) {
-                        request.setStatus(RequestStatus.REJECTED);
-                        requestsRepository.save(request);
-                    }
-                    updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
-                });
+        if (updateRequests.getStatus() == RequestAction.CONFIRMED &&
+                event.getParticipantLimit() != 0) {
+
+            long confirmedCount = requestsRepository
+                    .countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+
+            long pendingCount = requestsRepository
+                    .countByEventIdAndStatus(eventId, RequestStatus.PENDING);
+
+            if (confirmedCount + pendingCount > event.getParticipantLimit()) {
+                throw new ConflictException("лимит участников события исчерпан");
             }
         }
 
+        List<Request> requests =
+                requestsRepository.findAllByIdIn(updateRequests.getRequestIds());
+
+        if (updateRequests.getStatus() == RequestAction.CONFIRMED) {
+
+            for (Request request : requests) {
+                if (request.getStatus() == RequestStatus.PENDING) {
+                    request.setStatus(RequestStatus.CONFIRMED);
+                    updateResult.getConfirmedRequests()
+                            .add(requestMapper.toParticipationRequestDto(request));
+                } else {
+                    updateResult.getRejectedRequests()
+                            .add(requestMapper.toParticipationRequestDto(request));
+                }
+            }
+
+        } else if (updateRequests.getStatus() == RequestAction.REJECTED) {
+
+            for (Request request : requests) {
+                request.setStatus(RequestStatus.REJECTED);
+                updateResult.getRejectedRequests()
+                        .add(requestMapper.toParticipationRequestDto(request));
+            }
+        }
+
+        requestsRepository.saveAll(requests);
         return updateResult;
     }
 

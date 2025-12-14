@@ -38,7 +38,7 @@ public class NewEventDto {
     @Positive
     Integer participantLimit;
 
-    Boolean requestModeration = true;
+    Boolean requestModeration;
 
     @NotBlank
     @Size(min = 3, max = 120, message = "неверная длина названия")

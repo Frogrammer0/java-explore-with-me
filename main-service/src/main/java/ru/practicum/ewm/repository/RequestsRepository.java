@@ -27,14 +27,6 @@ public interface RequestsRepository extends JpaRepository<Request, Long> {
     Optional<Request> findAllByRequesterIdAndEventId(Long requesterId, Long eventId);
 
     @Query(value = """
-            select count(r)
-            from Request r
-            where r.event.id = :eventId AND r.status = :status
-            """)
-    Long countConfirmedRequests(@Param("eventId") Long eventId,
-                                @Param("status") RequestStatus status);
-
-    @Query(value = """
             select new ru.practicum.ewm.dto.request.EventConfirmedDto(e.id, COUNT(r))
             from Request r
             JOIN r.event e

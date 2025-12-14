@@ -181,7 +181,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateRequest.getStatus() == RequestAction.CONFIRMED) {
             AtomicLong limit = new AtomicLong(event.getParticipantLimit() -
-                    requestsRepository.countConfirmedRequests(eventId, RequestStatus.CONFIRMED));
+                    requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED));
 
             requests.forEach(request -> {
                         if (limit.get() > 0) {
@@ -350,7 +350,7 @@ public class EventServiceImpl implements EventService {
 
     private EventFullDto appendEventFullDto(EventFullDto eventDto) {
         log.info("добавление заявок и просмотров в EventFullDto id = {} в EventServiceImpl", eventDto.getId());
-        Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId(), RequestStatus.CONFIRMED);
+        Long confirmed = requestsRepository.countByEventIdAndStatus(eventDto.getId(), RequestStatus.CONFIRMED);
         Long views = getViewsByEvent(eventDto.getId());
         eventDto.setConfirmedRequests(confirmed);
         eventDto.setViews(views);
@@ -360,7 +360,7 @@ public class EventServiceImpl implements EventService {
 
     private EventShortDto appendEventShortDto(EventShortDto eventDto) {
         log.info("добавление заявок и просмотров в EventShortDto id = {} в EventServiceImpl", eventDto.getId());
-        Long confirmed = requestsRepository.countConfirmedRequests(eventDto.getId(), RequestStatus.CONFIRMED);
+        Long confirmed = requestsRepository.countByEventIdAndStatus(eventDto.getId(), RequestStatus.CONFIRMED);
         Long views = getViewsByEvent(eventDto.getId());
         eventDto.setConfirmedRequests(confirmed);
         eventDto.setViews(views);

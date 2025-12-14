@@ -42,8 +42,6 @@ public class AdminEventController {
         log.info("getEvents in AdminEventController");
         statsService.sendHit(request);
 
-
-
         List<EventState> stateList = List.of();
         if (states != null && !states.isEmpty()) {
             stateList = states.stream().map(EventState::valueOf).toList();
