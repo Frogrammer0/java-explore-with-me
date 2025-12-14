@@ -170,6 +170,8 @@ public class RequestServiceImpl implements RequestService {
                     request.setStatus(RequestStatus.CONFIRMED);
                     updateResult.getConfirmedRequests()
                             .add(requestMapper.toParticipationRequestDto(request));
+                } else if (request.getStatus() == RequestStatus.CONFIRMED) {
+                    throw new ConflictException("нельзя отменить уже принятую заявку");
                 } else {
                     updateResult.getRejectedRequests()
                             .add(requestMapper.toParticipationRequestDto(request));
