@@ -42,6 +42,7 @@ public class StatsServiceImpl implements StatsService {
         log.info("get Stats in StatsServiceImpl between start = {}, end = {}, uris = {}, unique = {}",
                 start, end, uris, unique);
 
+
         if (uris == null || uris.isEmpty()) {
             if (unique) {
                 return hitRepository.getStatsUnique(start, end);

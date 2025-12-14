@@ -44,6 +44,8 @@ public class StatsController {
             @RequestParam(name = "unique", required = false, defaultValue = "false") boolean unique
     ) {
         log.info("@GetMapping(\"/stats\") with start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
+        if (start.isAfter(end)) throw new IllegalArgumentException("время начала позже времени конца");
+
         return statsService.getStats(start, end, uris, unique);
     }
 
