@@ -170,8 +170,6 @@ public class RequestServiceImpl implements RequestService {
                     request.setStatus(RequestStatus.CONFIRMED);
                     updateResult.getConfirmedRequests()
                             .add(requestMapper.toParticipationRequestDto(request));
-                } else if (request.getStatus() == RequestStatus.CONFIRMED) {
-                    throw new ConflictException("нельзя отменить уже принятую заявку");
                 } else {
                     updateResult.getRejectedRequests()
                             .add(requestMapper.toParticipationRequestDto(request));
@@ -181,6 +179,9 @@ public class RequestServiceImpl implements RequestService {
         } else if (updateRequests.getStatus() == RequestStatus.REJECTED) {
 
             for (Request request : requests) {
+                if (request.getStatus() == RequestStatus.CONFIRMED) {
+                    throw new ConflictException("нельзя отменить уже принятую заявку");
+                }
                 request.setStatus(RequestStatus.REJECTED);
                 updateResult.getRejectedRequests()
                         .add(requestMapper.toParticipationRequestDto(request));
