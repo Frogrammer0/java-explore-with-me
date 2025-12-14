@@ -40,8 +40,7 @@ public class PublicEventController {
 
         statsService.sendHit(request);
 
-
-        return eventService.getPublicEvents(
+        return eventService.getPublicEvents(request.getRemoteAddr(),
                 text, categories, paid,
                 rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size

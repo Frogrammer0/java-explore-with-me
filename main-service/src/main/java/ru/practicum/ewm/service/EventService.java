@@ -1,9 +1,9 @@
 package ru.practicum.ewm.service;
 
 import ru.practicum.ewm.dto.event.*;
-import ru.practicum.ewm.model.EventState;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.dto.request.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.model.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,7 @@ public interface EventService {
     EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId,
                                                        EventRequestStatusUpdateRequest updateRequest);
 
-    List<EventFullDto> getEventsForAdmin(List<Long> users,
+    List<EventFullDto> getEventsForAdmin(String ip, List<Long> users,
                                          List<EventState> states,
                                          List<Long> categories,
                                          LocalDateTime rangeStart,
@@ -30,15 +30,15 @@ public interface EventService {
 
     EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateRequest);
 
-    List<EventShortDto> getPublicEvents(String text,
-                                       List<Long> categories,
-                                       Boolean paid,
-                                       LocalDateTime rangeStart,
-                                       LocalDateTime rangeEnd,
-                                       Boolean onlyAvailable,
-                                       String sort,
-                                       int from,
-                                       int size);
+    List<EventShortDto> getPublicEvents(String ip, String text,
+                                        List<Long> categories,
+                                        Boolean paid,
+                                        LocalDateTime rangeStart,
+                                        LocalDateTime rangeEnd,
+                                        Boolean onlyAvailable,
+                                        String sort,
+                                        int from,
+                                        int size);
 
     EventFullDto getPublishedEventById(Long eventId);
 

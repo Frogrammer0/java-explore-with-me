@@ -50,7 +50,7 @@ public class EventFullDto {
 
     Location location;
 
-    Boolean requestModeration = true;
+    Boolean requestModeration;
 
     Long confirmedRequests;
 

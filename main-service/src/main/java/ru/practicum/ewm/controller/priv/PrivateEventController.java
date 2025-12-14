@@ -54,7 +54,6 @@ public class PrivateEventController {
                                         @PathVariable Long eventId,
                                         @RequestBody(required = false) @Valid UpdateEventUserRequest dto) {
         log.info("updateUserEvent in PrivateEventController userId = {}, eventId = {}", userId, eventId);
-        log.info("dto = {}", dto);
         if (dto == null) {
             return eventService.cancelEventByUser(userId, eventId);
         }

@@ -42,11 +42,14 @@ public class AdminEventController {
         log.info("getEvents in AdminEventController");
         statsService.sendHit(request);
 
+
+
         List<EventState> stateList = List.of();
         if (states != null && !states.isEmpty()) {
             stateList = states.stream().map(EventState::valueOf).toList();
         }
-        return eventService.getEventsForAdmin(users, stateList, categories, rangeStart, rangeEnd, from, size);
+        return eventService.getEventsForAdmin(request.getRemoteAddr(), users, stateList, categories, rangeStart,
+                rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
@@ -54,7 +57,6 @@ public class AdminEventController {
                              @RequestBody @Valid UpdateEventAdminRequest dto,
                              HttpServletRequest request) {
         log.info("edit in AdminEventController");
-        statsService.sendHit(request);
         return eventService.updateEventByAdmin(eventId, dto);
     }
 

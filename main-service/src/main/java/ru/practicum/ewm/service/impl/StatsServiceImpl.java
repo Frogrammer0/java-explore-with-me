@@ -2,6 +2,7 @@ package ru.practicum.ewm.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.StatsClient;
@@ -10,6 +11,7 @@ import ru.practicum.ewm.service.StatsService;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
@@ -20,6 +22,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public void sendHit(HttpServletRequest request) {
+        log.info("sendHit in StatsServiceImpl with request = {}", request);
         EndpointHitDto dto = new EndpointHitDto(
                 null,
                 app,

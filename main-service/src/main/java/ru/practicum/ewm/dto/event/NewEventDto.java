@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@Builder
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +38,7 @@ public class NewEventDto {
     @Positive
     Integer participantLimit;
 
-    Boolean requestModeration;
+    Boolean requestModeration = true;
 
     @NotBlank
     @Size(min = 3, max = 120, message = "неверная длина названия")

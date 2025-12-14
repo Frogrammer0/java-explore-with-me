@@ -111,7 +111,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getRequestByEvent(Long userId, Long eventId) {
         log.info("получение заявок события id = {}  от пользователя id = {} в RequestServiceImpl", eventId, userId);
 
-        if (!eventRepository.existsByIdAndInitiatorId(userId, eventId)) {
+        if (!eventRepository.existsByIdAndInitiatorId(eventId, userId)) {
             throw new NotFoundException("событие с id = " + eventId + " и инициатором " + userId + " не найдено");
         }
         return requestsRepository.findAllByEventId(eventId).stream()
@@ -122,19 +122,16 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public EventRequestStatusUpdateResult updateStatuses(Long userId, Long eventId,
                                                          EventRequestStatusUpdateRequest updateRequests) {
-        log.info("изменение статусов заявок события id = {}  от пользователя id = {} в RequestServiceImpl", eventId, userId);
+        log.info("изменение статусов заявок события id = {}  от пользователя id = {} в RequestServiceImpl",
+                eventId, userId);
+
         Event event = getEventOrThrow(eventId);
+        EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
         Long createdRequests = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.PENDING);
+        Long alreadyConfirmed = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
         if (createdRequests >= event.getParticipantLimit()) {
             throw new ConflictException("число заявок превышает лимит участников");
-        }
-
-        Long alreadyConfirmed = requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
-        int newConfirmed = updateRequests.getRequestIds().size();
-
-        if (alreadyConfirmed + newConfirmed > event.getParticipantLimit()) {
-            throw new ConflictException("число заявок больше лимита участников");
         }
 
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
@@ -142,27 +139,35 @@ public class RequestServiceImpl implements RequestService {
                     " не является создателем события id = " + eventId);
         }
 
-        List<Request> requests = requestsRepository.findAllByIdIn(updateRequests.getRequestIds());
-        EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
+        if (updateRequests != null) {
+            int newConfirmed = updateRequests.getRequestIds().size();
 
-        if (updateRequests.getStatus() == RequestAction.CONFIRMED) {
-            requests.forEach(request -> {
-                if (request.getStatus() == RequestStatus.PENDING) {
-                    request.setStatus(RequestStatus.CONFIRMED);
-                    requestsRepository.save(request);
-                    updateResult.getConfirmedRequests().add(requestMapper.toParticipationRequestDto(request));
-                } else {
+            if (alreadyConfirmed + newConfirmed > event.getParticipantLimit()) {
+                throw new ConflictException("число заявок больше лимита участников");
+            }
+
+
+            List<Request> requests = requestsRepository.findAllByIdIn(updateRequests.getRequestIds());
+
+            if (updateRequests.getStatus() == RequestAction.CONFIRMED) {
+                requests.forEach(request -> {
+                    if (request.getStatus() == RequestStatus.PENDING) {
+                        request.setStatus(RequestStatus.CONFIRMED);
+                        requestsRepository.save(request);
+                        updateResult.getConfirmedRequests().add(requestMapper.toParticipationRequestDto(request));
+                    } else {
+                        updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
+                    }
+                });
+            } else if (updateRequests.getStatus() == RequestAction.REJECTED) {
+                requests.forEach(request -> {
+                    if (request.getStatus() != RequestStatus.REJECTED) {
+                        request.setStatus(RequestStatus.REJECTED);
+                        requestsRepository.save(request);
+                    }
                     updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
-                }
-            });
-        } else if (updateRequests.getStatus() == RequestAction.REJECTED) {
-            requests.forEach(request -> {
-                if (request.getStatus() != RequestStatus.REJECTED) {
-                    request.setStatus(RequestStatus.REJECTED);
-                    requestsRepository.save(request);
-                }
-                updateResult.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
-            });
+                });
+            }
         }
 
         return updateResult;

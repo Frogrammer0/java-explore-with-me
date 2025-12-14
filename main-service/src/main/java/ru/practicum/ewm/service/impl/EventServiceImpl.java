@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.StatsClient;
+import ru.practicum.ewm.dto.EndpointHitDto;
 import ru.practicum.ewm.dto.ViewStatsDto;
 import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.dto.request.EventConfirmedDto;
@@ -205,7 +206,7 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<EventFullDto> getEventsForAdmin(List<Long> users,
+    public List<EventFullDto> getEventsForAdmin(String ip, List<Long> users,
                                                 List<EventState> states,
                                                 List<Long> categories,
                                                 LocalDateTime rangeStart,
@@ -230,6 +231,8 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .map(eventMapper::toEventFullDto)
                 .toList();
+
+        sendViewsByList(events, ip);
 
         events = appendEventFullDto(events);
 
@@ -289,7 +292,7 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
+    public List<EventShortDto> getPublicEvents(String ip, String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, int from, int size) {
         log.info("получение событий getPublicEvents в EventServiceImpl");
@@ -309,8 +312,9 @@ public class EventServiceImpl implements EventService {
                 .map(eventMapper::toEventFullDto)
                 .toList();
 
-        events = appendEventFullDto(events);
+        sendViewsByList(events, ip);
 
+        events = appendEventFullDto(events);
 
 
         if (onlyAvailable) {
@@ -444,7 +448,7 @@ public class EventServiceImpl implements EventService {
         }
 
         List<String> uris = eventIds.stream()
-                .map(e -> "events/" + e)
+                .map(e -> "/events/" + e)
                 .toList();
 
         List<ViewStatsDto> stats = statsClient.getStats(
@@ -453,8 +457,6 @@ public class EventServiceImpl implements EventService {
                 uris,
                 true
         );
-
-        log.info("------------------------------------------------------------- stats = {}", stats);
 
 
         return stats.stream().collect(Collectors.toMap(
@@ -493,6 +495,18 @@ public class EventServiceImpl implements EventService {
         if (date.isBefore(LocalDateTime.now().withNano(0).plusHours(2))) {
             throw new BadRequestException("дата события должна быть не раньше чем через 2 часа");
         }
+    }
+
+    private void sendViewsByList(List<EventFullDto> events, String ip) {
+        events.forEach(e -> {
+            statsClient.sendHit(EndpointHitDto.builder()
+                    .app("ewm-main-service")
+                    .uri("/events/" + e.getId())
+                    .ip(ip)
+                    .timestamp(LocalDateTime.now().withNano(0))
+                    .build()
+            );
+        });
     }
 
 
