@@ -1,5 +1,6 @@
 package ru.practicum.ewm.controller.priv;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +55,8 @@ public class PrivateRequestController {
     public EventRequestStatusUpdateResult editRequestsByEvent(
             @PathVariable Long userId,
             @PathVariable Long eventId,
-            @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+            @RequestBody(required = false) @Valid EventRequestStatusUpdateRequest updateRequestDto) {
         log.info("editRequestsByEvent in PrivateRequestController");
-        return requestService.updateStatuses(userId, eventId, updateRequest);
+        return requestService.updateStatuses(userId, eventId, updateRequestDto);
     }
 }

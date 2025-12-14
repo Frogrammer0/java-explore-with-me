@@ -179,7 +179,7 @@ public class EventServiceImpl implements EventService {
             }
         });
 
-        if (updateRequest.getStatus() == RequestAction.CONFIRMED) {
+        if (updateRequest.getStatus() == RequestStatus.CONFIRMED) {
             AtomicLong limit = new AtomicLong(event.getParticipantLimit() -
                     requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED));
 
@@ -195,7 +195,7 @@ public class EventServiceImpl implements EventService {
                         }
                     }
             );
-        } else if (updateRequest.getStatus() == RequestAction.REJECTED) {
+        } else if (updateRequest.getStatus() == RequestStatus.REJECTED) {
             requests.forEach(request -> {
                 result.getRejectedRequests().add(requestMapper.toParticipationRequestDto(request));
             });

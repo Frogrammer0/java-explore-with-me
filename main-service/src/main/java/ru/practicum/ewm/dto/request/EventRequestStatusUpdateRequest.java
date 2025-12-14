@@ -2,7 +2,7 @@ package ru.practicum.ewm.dto.request;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.model.RequestAction;
+import ru.practicum.ewm.model.RequestStatus;
 
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class EventRequestStatusUpdateRequest {
 
-    List<Long> requestIds;
+    private List<Long> requestIds;
 
-    RequestAction status;
+    private RequestStatus status;
 }

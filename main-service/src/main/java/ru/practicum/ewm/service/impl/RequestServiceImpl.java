@@ -124,6 +124,10 @@ public class RequestServiceImpl implements RequestService {
         log.info("изменение статусов заявок события id = {}  от пользователя id = {} в RequestServiceImpl",
                 eventId, userId);
 
+        if (updateRequests == null || updateRequests.getRequestIds() == null) {
+            throw new ConflictException("лимит участников события исчерпан");
+        }
+
         Event event = getEventOrThrow(eventId);
 
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
@@ -131,8 +135,7 @@ public class RequestServiceImpl implements RequestService {
                     " не является создателем события id = " + eventId);
         }
 
-        if (updateRequests != null &&
-                updateRequests.getStatus() == RequestAction.CONFIRMED &&
+        if (updateRequests.getStatus() == RequestStatus.CONFIRMED &&
                 event.getParticipantLimit() != 0 &&
                 requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.PENDING)
                         + requestsRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED)
@@ -142,16 +145,12 @@ public class RequestServiceImpl implements RequestService {
         }
 
         EventRequestStatusUpdateResult updateResult = new EventRequestStatusUpdateResult();
+        long confirmedCount = requestsRepository
+                .countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
-        if (updateRequests == null) {
-            return updateResult;
-        }
 
-        if (updateRequests.getStatus() == RequestAction.CONFIRMED &&
+        if (updateRequests.getStatus() == RequestStatus.CONFIRMED &&
                 event.getParticipantLimit() != 0) {
-
-            long confirmedCount = requestsRepository
-                    .countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
 
             long pendingCount = requestsRepository
                     .countByEventIdAndStatus(eventId, RequestStatus.PENDING);
@@ -164,7 +163,7 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests =
                 requestsRepository.findAllByIdIn(updateRequests.getRequestIds());
 
-        if (updateRequests.getStatus() == RequestAction.CONFIRMED) {
+        if (updateRequests.getStatus() == RequestStatus.CONFIRMED) {
 
             for (Request request : requests) {
                 if (request.getStatus() == RequestStatus.PENDING) {
@@ -177,7 +176,7 @@ public class RequestServiceImpl implements RequestService {
                 }
             }
 
-        } else if (updateRequests.getStatus() == RequestAction.REJECTED) {
+        } else if (updateRequests.getStatus() == RequestStatus.REJECTED) {
 
             for (Request request : requests) {
                 request.setStatus(RequestStatus.REJECTED);
