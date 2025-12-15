@@ -17,7 +17,7 @@ class HitMapperTest {
                 .app("test-app")
                 .uri("/test")
                 .ip("192.168.1.1")
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
 
         EndpointHit result = HitMapper.toEndpointHit(dto);
@@ -37,7 +37,7 @@ class HitMapperTest {
                 .app("app")
                 .uri("/api")
                 .ip("127.0.0.1")
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
 
         EndpointHitDto result = HitMapper.toEndpointHitDto(hit);

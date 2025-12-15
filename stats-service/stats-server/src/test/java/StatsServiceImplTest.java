@@ -32,7 +32,7 @@ class StatsServiceImplTest {
                 .app("test-app")
                 .uri("/test")
                 .ip("192.168.1.1")
-                .timestamp(LocalDateTime.now())
+                .timestamp(LocalDateTime.now().withNano(0))
                 .build();
 
         EndpointHit savedHit = EndpointHit.builder()
@@ -54,8 +54,8 @@ class StatsServiceImplTest {
 
     @Test
     void getStats_WithoutUris_NotUnique_ShouldCallGetStats() {
-        LocalDateTime start = LocalDateTime.now().minusHours(1);
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = LocalDateTime.now().withNano(0).minusHours(1);
+        LocalDateTime end = LocalDateTime.now().withNano(0);
         List<ViewStatsDto> expectedStats = List.of(
                 new ViewStatsDto("app1", "/uri1", 10L),
                 new ViewStatsDto("app2", "/uri2", 5L)
@@ -71,8 +71,8 @@ class StatsServiceImplTest {
 
     @Test
     void getStats_WithoutUris_Unique_ShouldCallGetStatsUnique() {
-        LocalDateTime start = LocalDateTime.now().minusHours(1);
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = LocalDateTime.now().withNano(0).minusHours(1);
+        LocalDateTime end = LocalDateTime.now().withNano(0);
         List<ViewStatsDto> expectedStats = List.of(new ViewStatsDto("app1", "/uri1", 3L));
 
         when(hitRepository.getStatsUnique(start, end)).thenReturn(expectedStats);
@@ -85,8 +85,8 @@ class StatsServiceImplTest {
 
     @Test
     void getStats_WithUris_NotUnique_ShouldCallGetStatsWithUris() {
-        LocalDateTime start = LocalDateTime.now().minusHours(1);
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = LocalDateTime.now().withNano(0).minusHours(1);
+        LocalDateTime end = LocalDateTime.now().withNano(0);
         ArrayList<String> uris = new ArrayList<>(List.of("/uri1", "/uri2"));
         List<ViewStatsDto> expectedStats = List.of(new ViewStatsDto("app1", "/uri1", 7L));
 
@@ -100,8 +100,8 @@ class StatsServiceImplTest {
 
     @Test
     void getStats_WithUris_Unique_ShouldCallGetStatsUniqueWithUris() {
-        LocalDateTime start = LocalDateTime.now().minusHours(1);
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = LocalDateTime.now().withNano(0).minusHours(1);
+        LocalDateTime end = LocalDateTime.now().withNano(0);
         ArrayList<String> uris = new ArrayList<>(List.of("/uri1", "/uri2"));
         List<ViewStatsDto> expectedStats = List.of(new ViewStatsDto("app1", "/uri1", 2L));
 

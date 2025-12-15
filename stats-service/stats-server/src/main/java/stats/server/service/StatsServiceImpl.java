@@ -39,7 +39,9 @@ public class StatsServiceImpl implements StatsService {
             ArrayList<String> uris,
             boolean unique
     ) {
-        log.info("get Stats in StatsServiceImpl between start = {}, end = {}", start, end);
+        log.info("get Stats in StatsServiceImpl between start = {}, end = {}, uris = {}, unique = {}",
+                start, end, uris, unique);
+
 
         if (uris == null || uris.isEmpty()) {
             if (unique) {
