@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.exception.BadRequestException;
 import stats.server.service.StatsService;
 
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class StatsController {
             @RequestParam(name = "unique", required = false, defaultValue = "false") boolean unique
     ) {
         log.info("@GetMapping(\"/stats\") with start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
-        if (start.isAfter(end)) throw new IllegalArgumentException("время начала позже времени конца");
+        if (start.isAfter(end)) throw new BadRequestException("время начала позже времени конца");
 
         return statsService.getStats(start, end, uris, unique);
     }
