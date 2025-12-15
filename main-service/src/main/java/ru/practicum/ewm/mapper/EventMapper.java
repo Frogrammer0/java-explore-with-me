@@ -2,10 +2,7 @@ package ru.practicum.ewm.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.dto.event.EventFullDto;
-import ru.practicum.ewm.dto.event.EventShortDto;
-import ru.practicum.ewm.dto.event.NewEventDto;
-import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
+import ru.practicum.ewm.dto.event.*;
 import ru.practicum.ewm.model.*;
 
 import java.time.LocalDateTime;
@@ -45,6 +42,21 @@ public class EventMapper {
                 .participantLimit(event.getParticipantLimit())
                 .requestModeration(event.getRequestModeration())
                 .title(event.getTitle())
+                .build();
+    }
+
+    public UpdateEventAdminRequest toUpdateEventRequest(Event event, StateAction action) {
+        return UpdateEventAdminRequest.builder()
+                .annotation(event.getAnnotation())
+                .category(event.getCategory().getId())
+                .description(event.getDescription())
+                .eventDate(event.getEventDate())
+                .location(event.getLocation())
+                .paid(event.getPaid())
+                .participantLimit(event.getParticipantLimit())
+                .requestModeration(event.getRequestModeration())
+                .title(event.getTitle())
+                .stateAction(action)
                 .build();
     }
 

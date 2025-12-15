@@ -145,18 +145,7 @@ public class EventServiceImpl implements EventService {
 
         event.setState(EventState.PENDING);
 
-        UpdateEventAdminRequest adminRequest = UpdateEventAdminRequest.builder()
-                .annotation(event.getAnnotation())
-                .category(event.getCategory().getId())
-                .description(event.getDescription())
-                .eventDate(event.getEventDate())
-                .location(event.getLocation())
-                .paid(event.getPaid())
-                .participantLimit(event.getParticipantLimit())
-                .requestModeration(event.getRequestModeration())
-                .title(event.getTitle())
-                .stateAction(StateAction.REJECT_EVENT)
-                .build();
+        UpdateEventAdminRequest adminRequest = eventMapper.toUpdateEventRequest(event, StateAction.REJECT_EVENT);
 
         updateEventByAdmin(eventId, adminRequest);
 
@@ -201,6 +190,7 @@ public class EventServiceImpl implements EventService {
             });
         }
 
+        requestsRepository.saveAll(requests);
         return result;
     }
 
