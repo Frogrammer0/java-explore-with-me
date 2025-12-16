@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "93dfb739-453b-4401-95e6-c1e27b68aa2d",
-		"name": "Comments",
+		"name": "Comments Feature",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "47066772"
 	},
@@ -21,7 +21,9 @@
 									"});",
 									"pm.environment.set(\"userId\", pm.response.json().id);"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -35,7 +37,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"user1@mail.com\",\n  \"name\": \"User One\"\n}"
+							"raw": "{\n  \"email\": \"{{$timestamp}}@mail.com\",\n  \"name\": \"User {{$timestamp}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/admin/users",
@@ -62,7 +64,9 @@
 									"});",
 									"pm.environment.set(\"categoryId\", pm.response.json().id);"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -76,7 +80,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Concerts\"\n}"
+							"raw": "{\n  \"name\": \"Category {{$timestamp}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/admin/categories",
