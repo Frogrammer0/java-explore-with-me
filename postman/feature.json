@@ -395,7 +395,7 @@
 	],
 	"variable": [
 		{
-			"key": "baseurl",
+			"key": "baseUrl",
 			"value": ""
 		}
 	]
