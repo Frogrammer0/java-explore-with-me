@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.dto.category.CategoryDto;
-import ru.practicum.ewm.model.EventState;
+import ru.practicum.ewm.model.enums.EventState;
 import ru.practicum.ewm.model.Location;
 import ru.practicum.ewm.dto.user.UserShortDto;
 
