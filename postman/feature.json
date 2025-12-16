@@ -204,7 +204,9 @@
 							"pm.test(\"Comment has PENDING status\", function () { pm.expect(json.status).to.eql(\"PENDING\"); });",
 							"pm.environment.set(\"commentId\", json.id);"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
 					}
 				}
 			],
@@ -221,10 +223,12 @@
 					"raw": "{ \"text\": \"Очень классное событие!\" }"
 				},
 				"url": {
-					"raw": "{{baseUrl}}/users/{{userId}}/events/{{eventId}}/comments",
+					"raw": "http://localhost:8080/users/{{userId}}/events/{{eventId}}/comments",
+					"protocol": "http",
 					"host": [
-						"{{baseUrl}}"
+						"localhost"
 					],
+					"port": "8080",
 					"path": [
 						"users",
 						"{{userId}}",
@@ -269,10 +273,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments?status=PENDING",
+					"raw": "http://localhost:8080/admin/comments?status=PENDING",
+					"protocol": "http",
 					"host": [
-						"{{baseUrl}}"
+						"localhost"
 					],
+					"port": "8080",
 					"path": [
 						"admin",
 						"comments"
@@ -317,10 +323,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{baseUrl}}/admin/comments/{{commentId}}?status=PUBLISHED",
+					"raw": "http://localhost:8080/admin/comments/{{commentId}}?status=PUBLISHED",
+					"protocol": "http",
 					"host": [
-						"{{baseUrl}}"
+						"localhost"
 					],
+					"port": "8080",
 					"path": [
 						"admin",
 						"comments",
@@ -365,10 +373,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/events/{{eventId}}/comments",
+					"raw": "http://localhost:8080/events/{{eventId}}/comments",
+					"protocol": "http",
 					"host": [
-						"{{baseUrl}}"
+						"localhost"
 					],
+					"port": "8080",
 					"path": [
 						"events",
 						"{{eventId}}",
