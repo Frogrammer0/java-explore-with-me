@@ -11,6 +11,8 @@ import ru.practicum.ewm.exception.ForbiddenException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.mapper.RequestMapper;
 import ru.practicum.ewm.model.*;
+import ru.practicum.ewm.model.enums.EventState;
+import ru.practicum.ewm.model.enums.RequestStatus;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.repository.RequestsRepository;
 import ru.practicum.ewm.repository.UserRepository;

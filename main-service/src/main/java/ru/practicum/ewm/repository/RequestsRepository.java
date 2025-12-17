@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.ewm.dto.request.EventConfirmedDto;
 import ru.practicum.ewm.model.Request;
-import ru.practicum.ewm.model.RequestStatus;
+import ru.practicum.ewm.model.enums.RequestStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ public interface RequestsRepository extends JpaRepository<Request, Long> {
             select new ru.practicum.ewm.dto.request.EventConfirmedDto(e.id, COUNT(r))
             from Request r
             JOIN r.event e
-            where e.id IN :eventIds AND r.status = ru.practicum.ewm.model.RequestStatus.CONFIRMED
+            where e.id IN :eventIds AND r.status = ru.practicum.ewm.model.enums.RequestStatus.CONFIRMED
             group by e.id
             """)
     List<EventConfirmedDto> getConfirmedRequestsByEvents(@Param("eventIds") List<Long> eventIds);

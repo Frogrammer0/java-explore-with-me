@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.model.Location;
-import ru.practicum.ewm.model.StateAction;
+import ru.practicum.ewm.model.enums.StateAction;
 import java.time.LocalDateTime;
 
 @Getter

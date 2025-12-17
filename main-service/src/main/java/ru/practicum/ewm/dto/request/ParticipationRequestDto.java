@@ -2,7 +2,7 @@ package ru.practicum.ewm.dto.request;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.model.RequestStatus;
+import ru.practicum.ewm.model.enums.RequestStatus;
 
 import java.time.LocalDateTime;
 

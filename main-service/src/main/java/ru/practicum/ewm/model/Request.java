@@ -2,6 +2,7 @@ package ru.practicum.ewm.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practicum.ewm.model.enums.RequestStatus;
 
 import java.time.LocalDateTime;
 
